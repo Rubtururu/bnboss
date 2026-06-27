@@ -827,25 +827,25 @@ h1,h2,h3 { font-family: 'Cinzel', serif; }
           <div class="ms"><div class="ms-l">Crit</div><div class="ms-v" style="color:#f09030" id="myCritD">5%</div></div>
         </div>
       </div>
-      <div class="card" style="border-color:rgba(240,168,0,.4)">
+      <div class="card" style="border-color:rgba(240,168,0,.5)">
         <div class="ch" style="background:linear-gradient(135deg,rgba(24,14,0,.98),rgba(44,26,0,.95))">
           <span class="ct" style="color:var(--gold)">MetaMask — BNB Chain</span>
         </div>
         <div class="cb">
           <div id="walletDisconnected">
-            <div style="text-align:center;padding:8px 0 10px">
-              <div style="font-size:42px;margin-bottom:5px">🦊</div>
-              <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.65">Conecta MetaMask para jugar<br>con BNB real en la blockchain</div>
+            <div style="text-align:center;padding:6px 0 10px">
+              <div style="font-size:40px;margin-bottom:4px">🦊</div>
+              <div style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.65">Conecta MetaMask para jugar<br>con BNB real en la blockchain</div>
             </div>
             <button id="connectWalletBtn" onclick="connectWalletGame()" style="width:100%;background:linear-gradient(135deg,#b07000,#f0a800);border:none;border-radius:10px;color:#111;font-family:'Cinzel',serif;font-size:13px;font-weight:900;padding:12px;cursor:pointer;letter-spacing:1px;box-shadow:0 4px 14px rgba(240,168,0,.3)">
               Conectar MetaMask
             </button>
-            <div style="margin-top:7px;font-size:9px;color:var(--text3);text-align:center">Sin wallet = modo demo gratuito</div>
+            <div style="margin-top:6px;font-size:9px;color:var(--text3);text-align:center">Sin wallet = modo demo gratuito</div>
           </div>
           <div id="walletConnected" style="display:none">
             <div style="background:rgba(0,44,0,.3);border:1px solid rgba(0,180,80,.3);border-radius:9px;padding:9px 12px;margin-bottom:8px">
               <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
-                <div style="width:8px;height:8px;border-radius:50%;background:#00dd66;box-shadow:0 0 7px #00dd66;flex-shrink:0"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#00dd66;box-shadow:0 0 8px #00dd66;flex-shrink:0"></div>
                 <span style="font-size:11px;color:#00dd66;font-weight:700;font-family:'Cinzel',serif">CONECTADO</span>
                 <span style="font-size:9px;color:var(--text3);margin-left:auto">BSC Testnet</span>
               </div>
@@ -859,9 +859,10 @@ h1,h2,h3 { font-family: 'Cinzel', serif; }
               Actualizar Balance
             </button>
           </div>
-          <div style="margin-top:9px;font-size:10px;color:var(--text3);line-height:1.85">
-            <div style="padding:6px 9px;background:rgba(8,8,28,.6);border-radius:7px;border-left:2px solid var(--gold);margin-bottom:4px"><b style="color:var(--gold)">Economia:</b> 80% pool boss · 15% aventura · 5% dev</div>
-            <div style="padding:6px 9px;background:rgba(8,8,28,.6);border-radius:7px;border-left:2px solid var(--teal)"><b style="color:var(--teal)">Pagos:</b> Al completar 10 bosses o reset 24h</div>
+          <div style="margin-top:8px;font-size:9px;color:var(--text3);line-height:1.85">
+            <div style="padding:5px 8px;background:rgba(8,8,28,.6);border-radius:6px;border-left:2px solid var(--gold);margin-bottom:3px"><b style="color:var(--gold)">Economia:</b> 80% boss · 15% aventura · 5% dev</div>
+            <div style="padding:5px 8px;background:rgba(8,8,28,.6);border-radius:6px;border-left:2px solid var(--teal);margin-bottom:3px"><b style="color:var(--teal)">Pagos:</b> Al completar 10 bosses o reset 24h</div>
+            <div style="padding:5px 8px;background:rgba(8,8,28,.6);border-radius:6px;border-left:2px solid var(--purple3)"><b style="color:var(--purple3)">Contrato BSC:</b> <span style="font-family:monospace;font-size:8px">0x98aE4...c6D5</span></div>
           </div>
         </div>
       </div>
@@ -2513,14 +2514,29 @@ setInterval(()=>{G.players+=rng(-2,5);G.players=Math.max(150,G.players);if($i('p
 A.active=true;A.isBossWave=false;advSpawnNew();A.raf=requestAnimationFrame(advTick);
 // ── BLOCKCHAIN INTEGRATION ─────────────────────────────────────────────────
 // Carga solboss_wallet.js si está disponible, si no usa modo offline
-// MetaMask BSC Integration
+// MetaMask + BSC Integration
 var _MM=null,_W3=null,_CT=null,_ADDR=null,_MM_OK=false;
-var SOLBOSS_CONTRACT='0x0000000000000000000000000000000000000000';
-var SOLBOSS_ABI=[{"inputs":[],"name":"registerPlayer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"damage","type":"uint256"},{"name":"powered","type":"bool"}],"name":"attackBoss","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"count","type":"uint8"}],"name":"openBossChest","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"name":"itemType","type":"uint8"}],"name":"shopBuy","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"name":"a","type":"address"}],"name":"getPlayerBoss","outputs":[{"components":[{"name":"sessionId","type":"uint256"},{"name":"damage","type":"uint256"},{"name":"pendingReward","type":"uint256"},{"name":"wins","type":"uint32"},{"name":"bossLvReached","type":"uint8"},{"name":"registered","type":"bool"}],"type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getSessionInfo","outputs":[{"name":"_id","type":"uint256"},{"name":"_timeLeft","type":"uint256"},{"name":"_poolBoss","type":"uint256"},{"name":"_poolAdv","type":"uint256"},{"name":"_totalDmg","type":"uint256"}],"stateMutability":"view","type":"function"}];
+var SOLBOSS_CONTRACT='0x98aE441e76f0EA1e9bFD3ae7BF4c017d6273c6D5';
+var SOLBOSS_ABI=[
+  {"inputs":[],"name":"registerPlayer","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"damage","type":"uint256"},{"name":"powered","type":"bool"}],"name":"attackBoss","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[],"name":"claimReward","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"count","type":"uint8"}],"name":"openBossChest","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"name":"itemType","type":"uint8"}],"name":"shopBuy","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[],"name":"syncAdventure","inputs":[{"name":"world","type":"uint32"},{"name":"stage","type":"uint8"},{"name":"kills","type":"uint64"},{"name":"goldLv","type":"uint8"}],"outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"ascend","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"claimDailyChest","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"a","type":"address"}],"name":"getPlayerBoss","outputs":[{"components":[{"name":"sessionId","type":"uint256"},{"name":"damage","type":"uint256"},{"name":"pendingReward","type":"uint256"},{"name":"wins","type":"uint32"},{"name":"bossLvReached","type":"uint8"},{"name":"registered","type":"bool"}],"name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"name":"a","type":"address"}],"name":"getPlayerGacha","outputs":[{"components":[{"name":"gems","type":"uint32"},{"name":"chestsOpened","type":"uint32"},{"name":"pityEpic","type":"uint16"},{"name":"pityLeg","type":"uint16"},{"name":"pityMyth","type":"uint16"},{"name":"soulFragments","type":"uint32"},{"name":"talentPts","type":"uint8"},{"name":"ascensions","type":"uint8"},{"name":"lastDailyChest","type":"uint256"},{"name":"registeredAt","type":"uint256"}],"name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"getSessionInfo","outputs":[{"name":"_id","type":"uint256"},{"name":"_timeLeft","type":"uint256"},{"name":"_poolBoss","type":"uint256"},{"name":"_poolAdv","type":"uint256"},{"name":"_totalDmg","type":"uint256"}],"stateMutability":"view","type":"function"}
+];
 
 function _findMM(){
   var e=window.ethereum;if(!e)return null;
-  if(e.providers&&e.providers.length){for(var i=0;i<e.providers.length;i++){var p=e.providers[i];if(p.isMetaMask&&!p.isTrust&&!p.isTrustWallet&&!p.isCoinbaseWallet)return p;}return null;}
+  if(e.providers&&e.providers.length){
+    for(var i=0;i<e.providers.length;i++){var p=e.providers[i];if(p.isMetaMask&&!p.isTrust&&!p.isTrustWallet&&!p.isCoinbaseWallet)return p;}
+    return null;
+  }
   if(e.isMetaMask&&!e.isTrust&&!e.isTrustWallet&&!e.isCoinbaseWallet)return e;
   return null;
 }
@@ -2531,7 +2547,7 @@ async function connectWalletGame(){
   if(btn)btn.textContent='Conectando...';
   _MM=_findMM();
   if(!_MM){
-    alert(window.ethereum?'Otra wallet (TrustWallet?) detectada. SOLBOSS necesita MetaMask. Instala en metamask.io, desactiva TrustWallet en chrome://extensions y recarga.':'MetaMask no detectado. Instala en metamask.io y recarga.');
+    alert(window.ethereum?'Otra wallet detectada. SOLBOSS necesita MetaMask. Instala en metamask.io y desactiva otras wallets en chrome://extensions.':'MetaMask no detectado. Instala en metamask.io y recarga.');
     window.open('https://metamask.io','_blank');
     if(btn)btn.textContent='Conectar MetaMask';
     return;
@@ -2541,38 +2557,76 @@ async function connectWalletGame(){
     _ADDR=accs[0];
     try{await _MM.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x61'}]});}
     catch(sw){if(sw.code===4902)await _MM.request({method:'wallet_addEthereumChain',params:[{chainId:'0x61',chainName:'BSC Testnet',nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},rpcUrls:['https://data-seed-prebsc-1-s1.binance.org:8545/'],blockExplorerUrls:['https://testnet.bscscan.com/']}]});}
-    if(typeof Web3!=='undefined'){
-      _W3=new Web3(_MM);
-      if(SOLBOSS_CONTRACT!=='0x0000000000000000000000000000000000000000')_CT=new _W3.eth.Contract(SOLBOSS_ABI,SOLBOSS_CONTRACT);
-    }
+    _W3=new Web3(_MM);
+    _CT=new _W3.eth.Contract(SOLBOSS_ABI,SOLBOSS_CONTRACT);
     _MM_OK=true;
     var short=_ADDR.slice(0,6)+'...'+_ADDR.slice(-4);
     var d1=document.getElementById('walletDisconnected');if(d1)d1.style.display='none';
     var d2=document.getElementById('walletConnected');if(d2)d2.style.display='block';
     var da=document.getElementById('walletAddr');if(da)da.textContent=_ADDR;
     await _loadBal();
-    if(_CT){try{var p=await _CT.methods.getPlayerBoss(_ADDR).call();if(!p.registered){addEv('Registrando en BSC...');await _CT.methods.registerPlayer().send({from:_ADDR});addEv('<span class="et">Registrado!</span>');}}catch(e){}}
+    try{
+      var pb=await _CT.methods.getPlayerBoss(_ADDR).call();
+      if(!pb.registered){addEv('<span class="et">Registrando en BSC Testnet...</span>');await _CT.methods.registerPlayer().send({from:_ADDR,gas:200000});addEv('<span class="et">Registrado!</span>');}
+      else{addEv('<span class="et">Bienvenido de vuelta!</span>');}
+    }catch(e){console.warn('register:',e.message);}
+    await _loadChainState();
+    await _syncPools();
     addEv('<span class="et">MetaMask: '+short+' (BSC Testnet)</span>');
-    _hookAll();
-    _MM.on('accountsChanged',function(a){if(!a.length)_disconnectWallet();else{_ADDR=a[0];var da2=document.getElementById('walletAddr');if(da2)da2.textContent=a[0];_loadBal();}});
+    _hookPurchases();
+    _MM.on('accountsChanged',function(a){if(!a.length)_disconnectWallet();else{_ADDR=a[0];_loadBal();}});
     _MM.on('chainChanged',function(){location.reload();});
   }catch(e){
     if(btn)btn.textContent='Conectar MetaMask';
-    if(e.code===4001)addEv('<span class="eg">Cancelado</span>');
-    else addEv('<span class="eg">Error: '+(e.message||'').slice(0,60)+'</span>');
+    if(e.code===4001)addEv('<span class="eg">Conexion rechazada</span>');
+    else addEv('<span class="eg">Error: '+(e.message||'').slice(0,80)+'</span>');
   }
 }
 
 async function _loadBal(){
   if(!_ADDR||!_W3)return 0;
   try{
-    var w=await _W3.eth.getBalance(_ADDR);
-    var b=parseFloat(_W3.utils.fromWei(w,'ether'));
-    G.wallet=b;
-    var h=document.getElementById('walletHdr');if(h)h.textContent=b.toFixed(4);
-    var bl=document.getElementById('walletBalanceLive');if(bl)bl.textContent=b.toFixed(4);
-    return b;
-  }catch(e){return 0;}
+    var wei=await _W3.eth.getBalance(_ADDR);
+    var bnb=parseFloat(_W3.utils.fromWei(wei,'ether'));
+    G.wallet=bnb;
+    var ids=['walletHdr','walletBalanceLive'];
+    ids.forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=bnb.toFixed(4);});
+    return bnb;
+  }catch(e){console.warn('bal:',e.message);return 0;}
+}
+
+async function _loadChainState(){
+  if(!_CT||!_ADDR)return;
+  try{
+    var g=await _CT.methods.getPlayerGacha(_ADDR).call();
+    G.gems=parseInt(g.gems)||0;
+    G.pityEpic=parseInt(g.pityEpic)||0;
+    G.pityLeg=parseInt(g.pityLeg)||0;
+    G.pityMyth=parseInt(g.pityMyth)||0;
+    if(typeof updateGemUI==='function')updateGemUI();
+    if(typeof updatePityUI==='function')updatePityUI();
+    var pb=await _CT.methods.getPlayerBoss(_ADDR).call();
+    G.wins=parseInt(pb.wins)||0;
+    var pend=parseInt(pb.pendingReward)||0;
+    if(pend>0){G.pendingReward=parseFloat(_W3.utils.fromWei(String(pend),'ether'));if(typeof updateRewardBanner==='function')updateRewardBanner();}
+    addEv('<span class="et">Estado cargado desde blockchain</span>');
+  }catch(e){console.warn('loadState:',e.message);}
+}
+
+async function _syncPools(){
+  if(!_CT||!_W3)return;
+  try{
+    var info=await _CT.methods.getSessionInfo().call();
+    var bp=parseFloat(_W3.utils.fromWei(String(info._poolBoss),'ether'));
+    var ap=parseFloat(_W3.utils.fromWei(String(info._poolAdv),'ether'));
+    G.pool=bp;G.treasury=ap;
+    if(parseInt(info._timeLeft)>0)G.timeLeft=parseInt(info._timeLeft);
+    ['pPool'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=bp.toFixed(4);});
+    ['pTreasury','tPool'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=ap.toFixed(4);});
+    var apb=document.getElementById('advPoolBig');if(apb)apb.textContent=ap.toFixed(4);
+    var apay=document.getElementById('advPayoutBig');if(apay)apay.textContent=(ap*0.03).toFixed(4);
+    if(typeof fastStats==='function')fastStats();
+  }catch(e){console.warn('syncPools:',e.message);}
 }
 
 function _disconnectWallet(){
@@ -2585,61 +2639,73 @@ function _disconnectWallet(){
 
 async function _tx(method,valueEth){
   try{
-    var opts={from:_ADDR};
-    if(valueEth>0)opts.value=_W3.utils.toWei(valueEth.toFixed(6),'ether');
+    var opts={from:_ADDR,gas:300000};
+    if(valueEth&&valueEth>0)opts.value=_W3.utils.toWei(String(Number(valueEth).toFixed(6)),'ether');
+    addEv('<span style="color:#f0a030;font-size:10px">Esperando aprobacion MetaMask...</span>');
     var tx=await method.send(opts);
-    await _loadBal();return tx;
+    addEv('<span class="et">Confirmado: '+tx.transactionHash.slice(0,14)+'...</span>');
+    await _loadBal();
+    return tx;
   }catch(e){
-    if(e.code===4001)addEv('<span class="eg">Transaccion cancelada</span>');
-    else addEv('<span class="eg">Error: '+(e.message||'').slice(0,60)+'</span>');
+    if(e.code===4001)addEv('<span class="eg">Cancelado por el usuario</span>');
+    else addEv('<span class="eg">Error TX: '+(e.message||'').slice(0,80)+'</span>');
     return false;
   }
 }
 
-async function _mmPay(bnb){
-  try{
-    await _MM.request({method:'eth_sendTransaction',params:[{from:_ADDR,to:'0x000000000000000000000000000000000000dEaD',value:'0x'+Math.floor(bnb*1e18).toString(16)}]});
-    await _loadBal();return true;
-  }catch(e){
-    if(e.code===4001)addEv('<span class="eg">Transaccion cancelada</span>');
-    return false;
-  }
-}
-
-function _hookAll(){
-  // Hook openChest - cofres boss
+function _hookPurchases(){
+  // openChest -> openBossChest en contrato real
   var _oOC=openChest;
   openChest=async function(count,mode){
     if(!_MM_OK||mode!=='sol')return _oOC(count,mode);
-    var cost=0.001*count;
-    addEv('<span class="et">Abriendo cofre... ('+cost.toFixed(3)+' BNB)</span>');
-    var ok=_CT?!!(await _tx(_CT.methods.openBossChest(count),cost)):await _mmPay(cost);
-    if(ok)_oOC(count,mode);
+    addEv('<span class="et">Abriendo '+count+' cofre(s) ('+( 0.001*count).toFixed(3)+' BNB)...</span>');
+    var tx=await _tx(_CT.methods.openBossChest(count),0.001*count);
+    if(!tx)return;
+    _oOC(count,mode);
+    await _syncPools();
   };
-  // Hook buyShop - tienda aventura
+  // buyShop -> shopBuy en contrato real
   var _oBS=buyShop;
   buyShop=async function(type){
     if(!_MM_OK)return _oBS(type);
-    var costs={gold:0.001,gems:0.01,items:0.005};
-    var cost=costs[type]||0;
-    addEv('<span class="et">Tienda... ('+cost.toFixed(3)+' BNB)</span>');
-    var ok=_CT?!!(await _tx(_CT.methods.shopBuy({gold:0,gems:1,items:2}[type]||0),cost)):await _mmPay(cost);
-    if(ok)_oBS(type);
+    var prices={gold:0.001,gems:0.01,items:0.005};
+    var tidx={gold:0,gems:1,items:2};
+    addEv('<span class="et">Comprando en tienda ('+prices[type].toFixed(3)+' BNB)...</span>');
+    var tx=await _tx(_CT.methods.shopBuy(tidx[type]),prices[type]);
+    if(!tx)return;
+    _oBS(type);
+    await _syncPools();
   };
-  // Hook doAtk - ataque potenciado
+  // doAtk -> attackBoss en contrato (solo ataque potenciado)
   var _oDA=doAtk;
   doAtk=async function(){
-    if(!_MM_OK||!G||G.atkType!==1)return _oDA();
-    var ok=_CT?!!(await _tx(_CT.methods.attackBoss(Math.floor(Math.random()*1000+500),true),0.001)):await _mmPay(0.001);
-    if(ok)_oDA();
+    var powered=G&&G.atkType===1;
+    if(!_MM_OK||!powered)return _oDA();
+    var dmg=String(Math.floor(Math.random()*1000+500));
+    var tx=await _tx(_CT.methods.attackBoss(dmg,true),0.001);
+    if(tx)_oDA();
   };
-  // Hook claimReward
-  if(_CT){var _oCR=claimReward;claimReward=async function(){var tx=await _tx(_CT.methods.claimReward(),0);if(tx){addEv('<span class="et">Recompensa recibida!</span>');_oCR();}};}
-  addEv('<span style="font-size:10px;color:#00cc66">BSC hooks activos</span>');
+  // claimReward -> claimReward en contrato
+  var _oCR=claimReward;
+  claimReward=async function(){
+    if(!_MM_OK)return _oCR();
+    addEv('<span class="et">Reclamando recompensa en BSC...</span>');
+    var tx=await _tx(_CT.methods.claimReward(),0);
+    if(tx){addEv('<span class="et">Recompensa enviada a tu wallet!</span>');_oCR();await _loadBal();}
+  };
+  // openDailyChest -> claimDailyChest en contrato
+  var _oDC=openDailyChest;
+  openDailyChest=async function(){
+    if(!_MM_OK)return _oDC();
+    var tx=await _tx(_CT.methods.claimDailyChest(),0);
+    if(tx)_oDC();
+    else addEv('<span class="eg">Cofre diario ya reclamado o error</span>');
+  };
+  addEv('<span style="font-size:10px;color:#00cc66">Contrato BSC activo</span>');
 }
 
-window.addEventListener('load',function(){var mm=_findMM();if(mm&&mm.selectedAddress)setTimeout(connectWalletGame,800);});
-setInterval(function(){if(_MM_OK)_loadBal();},30000);
+window.addEventListener('load',function(){var mm=_findMM();if(mm&&mm.selectedAddress)setTimeout(connectWalletGame,1000);});
+setInterval(function(){if(_MM_OK){_loadBal();_syncPools();}},30000);
 
 // Auto-detect wallet on load
 window.addEventListener('load', () => {
