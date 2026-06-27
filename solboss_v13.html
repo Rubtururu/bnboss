@@ -2411,6 +2411,8 @@ async function connectMM(){
       }catch(ex){console.warn(ex);}
     }
     if(typeof addEv==='function')addEv('<span class="et">MetaMask: '+short+'</span>');
+    // Activar blockchain hooks
+    setTimeout(function(){ _activateHooks(); _syncPoolsFromChain(); }, 500);
     mm.on('accountsChanged',function(a){
       if(!a.length)disconnectMM();
       else{_acc=a[0];var da2=document.getElementById('mmAddr');if(da2)da2.textContent=a[0];refreshMM();}
@@ -2457,11 +2459,225 @@ var _ABI=[
   {"inputs":[{"name":"a","type":"address"}],"name":"getPlayerBoss","outputs":[{"components":[{"name":"sessionId","type":"uint256"},{"name":"damage","type":"uint256"},{"name":"pendingReward","type":"uint256"},{"name":"wins","type":"uint32"},{"name":"bossLvReached","type":"uint8"},{"name":"registered","type":"bool"}],"type":"tuple"}],"stateMutability":"view","type":"function"}
 ];
 
+
+// ═══════════════════════════════════════════════════════
+//  BLOCKCHAIN WRAPPERS - Intercept game actions -> BSC
+// ═══════════════════════════════════════════════════════
+
+// Generic send helper: sends tx via MetaMask and waits
+async function _send(method, valueEth, args) {
+  if (!_ok || !_w3) return false;
+  try {
+    var opts = {from: _acc};
+    if (valueEth && parseFloat(valueEth) > 0) {
+      opts.value = _w3.utils.toWei(String(valueEth), 'ether');
+    }
+    var tx = await method.send(opts);
+    await refreshMM();
+    return tx;
+  } catch(e) {
+    if (e.code === 4001) {
+      addEv('<span class="eg">Transaccion rechazada por el usuario</span>');
+    } else {
+      addEv('<span class="eg">Error BSC: ' + (e.message||'').slice(0,80) + '</span>');
+    }
+    return false;
+  }
+}
+
+// ── INTERCEPTAR openChest (cofres boss) ──────────────────
+var _origOpenChest = null;
+function _hookOpenChest() {
+  if (typeof openChest !== 'undefined' && !_origOpenChest) {
+    _origOpenChest = openChest;
+    openChest = async function(count, mode) {
+      if (!_ok || mode !== 'sol') {
+        // Sin wallet o cofre de gemas: comportamiento normal
+        return _origOpenChest(count, mode);
+      }
+      // Con wallet: llamar al contrato
+      var cost = (0.001 * count).toFixed(4);
+      addEv('<span class="et">Abriendo cofre on-chain... ('+ cost +' BNB)</span>');
+      if (_ct) {
+        var tx = await _send(_ct.methods.openBossChest(count), cost, null);
+        if (!tx) return; // rechazado
+        addEv('<span class="et">TX confirmada. Procesando cofre...</span>');
+      } else {
+        // Sin contrato desplegado: cobrar via transferencia directa + animacion
+        try {
+          await _w3.eth.sendTransaction({
+            from: _acc,
+            to: _acc, // placeholder hasta que haya contrato
+            value: _w3.utils.toWei(cost, 'ether')
+          });
+        } catch(e) {
+          if (e.code !== 4001) {} // ignorar si no hay contrato aun
+        }
+      }
+      // Animacion local (rareza calculada off-chain hasta que haya contrato)
+      _origOpenChest(count, mode);
+      G.wallet = await refreshMM() || G.wallet;
+    };
+    addEv('<span style="color:#888;font-size:10px">Hook cofres BSC activo</span>');
+  }
+}
+
+// ── INTERCEPTAR buyShop (tienda aventura) ────────────────
+var _origBuyShop = null;
+function _hookBuyShop() {
+  if (typeof buyShop !== 'undefined' && !_origBuyShop) {
+    _origBuyShop = buyShop;
+    buyShop = async function(type) {
+      if (!_ok) {
+        return _origBuyShop(type);
+      }
+      var prices = {gold: 0.001, gems: 0.01, items: 0.005};
+      var cost = prices[type] || 0;
+      addEv('<span class="et">Compra en tienda on-chain... ('+ cost +' BNB)</span>');
+      if (_ct) {
+        var typeIdx = {gold: 0, gems: 1, items: 2}[type] || 0;
+        var tx = await _send(_ct.methods.shopBuy(typeIdx), cost, null);
+        if (!tx) return;
+      } else {
+        // Sin contrato: pedir aprobacion MetaMask de todos modos
+        try {
+          await _w3.eth.sendTransaction({
+            from: _acc,
+            to: '0x000000000000000000000000000000000000dEaD', // burn address temporal
+            value: _w3.utils.toWei(String(cost), 'ether'),
+            data: _w3.utils.toHex('SOLBOSS:SHOP:' + type.toUpperCase())
+          });
+        } catch(e) { if(e.code===4001){addEv('<span class="eg">Compra cancelada</span>');return;} }
+      }
+      // Efecto local despues de confirmar
+      _origBuyShop(type);
+      G.wallet = await refreshMM() || G.wallet;
+    };
+  }
+}
+
+// ── INTERCEPTAR doAtk (ataque potenciado boss) ───────────
+var _origDoAtk = null;
+function _hookDoAtk() {
+  if (typeof doAtk !== 'undefined' && !_origDoAtk) {
+    _origDoAtk = doAtk;
+    doAtk = async function() {
+      var powered = typeof G !== 'undefined' && G.atkType === 1;
+      if (!_ok || !powered) {
+        return _origDoAtk();
+      }
+      // Ataque potenciado on-chain: 0.001 BNB
+      if (_ct) {
+        var dmg = Math.floor(Math.random() * 1000 + 500); // estimacion local
+        var tx = await _send(_ct.methods.attackBoss(dmg, true), '0.001', null);
+        if (!tx) return;
+        G.wallet = await refreshMM() || G.wallet;
+      }
+      _origDoAtk();
+    };
+  }
+}
+
+// ── INTERCEPTAR claimReward ───────────────────────────────
+var _origClaimReward = null;
+function _hookClaimReward() {
+  if (typeof claimReward !== 'undefined' && !_origClaimReward) {
+    _origClaimReward = claimReward;
+    claimReward = async function() {
+      if (!_ok || !_ct) {
+        return _origClaimReward();
+      }
+      addEv('<span class="et">Reclamando recompensa on-chain...</span>');
+      var tx = await _send(_ct.methods.claimReward(), '0', null);
+      if (tx) {
+        addEv('<span class="eg">Recompensa recibida en tu wallet!</span>');
+        G.wallet = await refreshMM() || G.wallet;
+        if (typeof updateRewardBanner === 'function') updateRewardBanner();
+      }
+    };
+  }
+}
+
+// ── INTERCEPTAR openDailyChest ────────────────────────────
+var _origDailyChest = null;
+function _hookDailyChest() {
+  if (typeof openDailyChest !== 'undefined' && !_origDailyChest) {
+    _origDailyChest = openDailyChest;
+    openDailyChest = async function() {
+      if (!_ok || !_ct) {
+        return _origDailyChest();
+      }
+      try {
+        var tx = await _send(_ct.methods.claimDailyChest(), '0', null);
+        if (tx) {
+          _origDailyChest();
+        } else {
+          addEv('<span class="eg">Cofre diario: error o ya reclamado hoy</span>');
+        }
+      } catch(e) {
+        addEv('<span class="eg">' + (e.message||'').slice(0,60) + '</span>');
+      }
+    };
+  }
+}
+
+// ── INTERCEPTAR doAscend ──────────────────────────────────
+var _origDoAscend = null;
+function _hookDoAscend() {
+  if (typeof doAscend !== 'undefined' && !_origDoAscend) {
+    _origDoAscend = doAscend;
+    doAscend = async function() {
+      if (_ok && _ct) {
+        var tx = await _send(_ct.methods.ascend(), '0', null);
+        if (!tx) return;
+      }
+      _origDoAscend();
+    };
+  }
+}
+
+// ── Activar todos los hooks cuando hay wallet conectada ───
+function _activateHooks() {
+  _hookOpenChest();
+  _hookBuyShop();
+  _hookDoAtk();
+  _hookClaimReward();
+  _hookDailyChest();
+  _hookDoAscend();
+  addEv('<span style="color:#00cc66;font-size:10px">Blockchain hooks activos</span>');
+}
+
+// ── Sync de pool info al pool del juego ──────────────────
+async function _syncPoolsFromChain() {
+  if (!_ct || !_w3) return;
+  try {
+    var info = await _ct.methods.getSessionInfo().call();
+    var boss_bnb = parseFloat(_w3.utils.fromWei(info._poolBoss, 'ether'));
+    var adv_bnb  = parseFloat(_w3.utils.fromWei(info._poolAdv,  'ether'));
+    var time_left = parseInt(info._timeLeft);
+    if (typeof G !== 'undefined') {
+      G.pool     = boss_bnb;
+      G.treasury = adv_bnb;
+      G.timeLeft = time_left;
+    }
+    // Actualizar displays
+    var pPool = document.getElementById('pPool');
+    var pTreasury = document.getElementById('pTreasury');
+    var advPool = document.getElementById('advPoolBig');
+    if (pPool)     pPool.textContent     = boss_bnb.toFixed(4);
+    if (pTreasury) pTreasury.textContent = adv_bnb.toFixed(4);
+    if (advPool)   advPool.textContent   = adv_bnb.toFixed(4);
+    var advPay = document.getElementById('advPayoutBig');
+    if (advPay) advPay.textContent = (adv_bnb * 0.03).toFixed(4);
+    if (typeof fastStats === 'function') fastStats();
+  } catch(e) { console.warn('syncPools:', e.message); }
+}
+
 window.addEventListener('load',function(){
   var mm=_getMM();
   if(mm&&mm.selectedAddress)connectMM();
 });
-setInterval(function(){if(_ok)refreshMM();},30000);
+setInterval(function(){if(_ok){refreshMM();_syncPoolsFromChain();}},30000);
 </script>
 </body>
 </html>
