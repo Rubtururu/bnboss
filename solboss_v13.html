@@ -678,13 +678,7 @@ h1,h2,h3 { font-family: 'Cinzel', serif; }
 /* Damage floaters - bigger */
 .adv-dmgf { font-size: 14px !important; font-weight: 900 !important; }
 
-
-/* Enemy slots appended directly to advCanvas like hero-wrap */
-.enemy-slot-live { pointer-events:none; will-change:left; }
-.enemy-name-tag { user-select:none; }
-@keyframes enemyFlash{0%,100%{filter:drop-shadow(0 0 8px currentColor) drop-shadow(0 3px 6px rgba(0,0,0,.8))}50%{filter:drop-shadow(0 0 20px #fff) brightness(3)}}
 </style>
-  <!-- Web3.js para BSC/MetaMask -->
   <script src="https://cdn.jsdelivr.net/npm/web3@4.3.0/dist/web3.min.js"></script>
 </head>
 <body>
@@ -845,47 +839,39 @@ h1,h2,h3 { font-family: 'Cinzel', serif; }
     </div>
     <!-- SIDEBAR -->
     <div>
-      <div class="card" style="border-color:var(--gold);box-shadow:0 0 20px rgba(240,160,48,.15)">
+      <div class="card" style="border-color:rgba(240,168,0,.5)">
         <div class="ch" style="background:linear-gradient(135deg,rgba(20,12,0,.98),rgba(40,24,0,.95))">
-          <span class="ct" style="color:var(--gold)">🦊 MetaMask — BNB Chain</span>
+          <span class="ct" style="color:var(--gold)">MetaMask / BNB Chain</span>
         </div>
-        <div class="cb" style="padding:12px">
-          <!-- Estado desconectado -->
-          <div id="walletDisconnected">
+        <div class="cb">
+          <div id="mmOff">
             <div style="text-align:center;padding:8px 0 12px">
-              <div style="font-size:44px;margin-bottom:4px">🦊</div>
-              <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Requiere MetaMask.<br>No compatible con TrustWallet.</div>
+              <div style="font-size:42px;margin-bottom:5px">🦊</div>
+              <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.6">Conecta MetaMask para jugar<br>con BNB real en la blockchain</div>
             </div>
-            <button id="connectWalletBtn" onclick="connectWalletGame()" style="width:100%;background:linear-gradient(135deg,#b07000,#f0a800);border:none;border-radius:10px;color:#111;font-family:'Cinzel',serif;font-size:13px;font-weight:900;padding:13px;cursor:pointer;letter-spacing:1px;transition:.2s;box-shadow:0 4px 16px rgba(240,168,0,.35)">
-              🦊 CONECTAR METAMASK
+            <button id="connectWalletBtn" onclick="connectMM()" style="width:100%;background:linear-gradient(135deg,#b07000,#f0a800);border:none;border-radius:10px;color:#111;font-family:'Cinzel',serif;font-size:13px;font-weight:900;padding:12px;cursor:pointer;letter-spacing:1px">
+              Conectar MetaMask
             </button>
-            <div style="margin-top:8px;font-size:10px;color:var(--text3);text-align:center">Sin wallet = modo demo gratuito</div>
+            <div style="margin-top:6px;font-size:9px;color:var(--text3);text-align:center">Sin wallet = modo demo gratuito</div>
           </div>
-          <!-- Estado conectado (oculto por defecto) -->
-          <div id="walletConnected" style="display:none">
-            <div style="background:rgba(0,60,0,.3);border:1px solid rgba(0,200,80,.3);border-radius:10px;padding:10px 12px;margin-bottom:10px">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-                <div style="width:8px;height:8px;border-radius:50%;background:#00dd66;box-shadow:0 0 8px #00dd66"></div>
-                <span style="font-size:11px;color:#00dd66;font-weight:700;font-family:'Cinzel',serif">CONECTADO — BSC</span>
+          <div id="mmOn" style="display:none">
+            <div style="background:rgba(0,40,0,.3);border:1px solid rgba(0,180,80,.3);border-radius:9px;padding:9px 11px;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+                <div style="width:7px;height:7px;border-radius:50%;background:#00cc66"></div>
+                <span style="font-size:11px;color:#00cc66;font-weight:700">CONECTADO</span>
+                <span id="mmNet" style="font-size:9px;color:var(--text3);margin-left:auto">BSC Testnet</span>
               </div>
-              <div id="walletAddrDisplay" style="font-family:monospace;font-size:10px;color:var(--text2);margin-bottom:6px;word-break:break-all"></div>
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div style="font-size:12px;color:var(--text2)">Balance: <span id="walletBalanceLive" style="color:var(--gold);font-weight:700">0.0000</span> BNB</div>
-                <button onclick="disconnectWallet()" style="background:rgba(200,0,0,.2);border:1px solid rgba(200,0,0,.4);border-radius:6px;color:#ff6060;font-size:10px;font-weight:700;padding:3px 8px;cursor:pointer;font-family:'Rajdhani',sans-serif">Salir</button>
+              <div id="mmAddr" style="font-family:monospace;font-size:9px;color:var(--text2);word-break:break-all;margin-bottom:4px"></div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="font-size:12px;color:var(--text2)">Balance: <b id="mmBal" style="color:var(--gold)">0.0000</b> BNB</span>
+                <button onclick="disconnectMM()" style="background:rgba(180,0,0,.2);border:1px solid rgba(180,0,0,.3);border-radius:5px;color:#ff7070;font-size:10px;padding:2px 7px;cursor:pointer">Salir</button>
               </div>
             </div>
-            <button onclick="refreshBalance()" style="width:100%;background:rgba(0,60,0,.3);border:1px solid rgba(0,200,80,.3);border-radius:8px;color:#00dd66;font-size:11px;font-weight:700;padding:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;margin-bottom:8px">
-              🔄 Actualizar Balance
-            </button>
+            <button onclick="refreshMM()" style="width:100%;background:rgba(0,40,0,.2);border:1px solid rgba(0,180,80,.25);border-radius:7px;color:#00cc66;font-size:11px;font-weight:700;padding:5px;cursor:pointer">Actualizar Balance</button>
           </div>
-          <!-- Info siempre visible -->
-          <div style="margin-top:8px;font-size:10px;color:var(--text3);line-height:1.85">
-            <div style="padding:6px 9px;background:rgba(8,8,28,.6);border-radius:7px;border-left:2px solid var(--gold);margin-bottom:5px">
-              <b style="color:var(--gold)">Economía:</b> 80% pool boss · 15% aventura · 5% dev
-            </div>
-            <div style="padding:6px 9px;background:rgba(8,8,28,.6);border-radius:7px;border-left:2px solid var(--teal)">
-              <b style="color:var(--teal)">Recompensas:</b> Se pagan al completar 10 bosses o reset 24h
-            </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text3);line-height:1.8">
+            <div style="padding:5px 8px;background:rgba(8,8,28,.6);border-radius:6px;border-left:2px solid var(--gold);margin-bottom:4px"><b style="color:var(--gold)">Economia:</b> 80% pool boss, 15% aventura, 5% dev</div>
+            <div style="padding:5px 8px;background:rgba(8,8,28,.6);border-radius:6px;border-left:2px solid var(--teal)"><b style="color:var(--teal)">Pagos:</b> Al completar 10 bosses o reset 24h</div>
           </div>
         </div>
       </div>
@@ -1057,19 +1043,19 @@ h1,h2,h3 { font-family: 'Cinzel', serif; }
         <div class="adv-pool-strip">
           <div class="adv-pool-block">
             <div class="apl">Pool de Aventura</div>
-            <div class="apv" style="color:var(--green);text-shadow:0 0 18px rgba(68,204,68,.4)">Ƀ<span id="advPoolBig">0.0000</span></div>
+            <div class="apv" style="color:var(--green);text-shadow:0 0 18px rgba(68,204,68,.4)">◎<span id="advPoolBig">0.0000</span></div>
             <div class="aps">15% boss + 95% tienda</div>
           </div>
           <div class="adv-pool-sep"></div>
           <div class="adv-pool-block">
             <div class="apl">Reparto Diario (3%)</div>
-            <div class="apv" style="color:var(--gold);font-size:22px;text-shadow:0 0 14px rgba(240,160,48,.4)">Ƀ<span id="advPayoutBig">0.0000</span></div>
+            <div class="apv" style="color:var(--gold);font-size:22px;text-shadow:0 0 14px rgba(240,160,48,.4)">◎<span id="advPayoutBig">0.0000</span></div>
             <div class="aps">Ponderado por stage alcanzado</div>
           </div>
           <div class="adv-pool-sep"></div>
           <div class="adv-pool-block">
             <div class="apl">Tu Est. Hoy</div>
-            <div class="apv" style="color:var(--teal);font-size:22px;text-shadow:0 0 14px rgba(0,212,170,.4)">Ƀ<span id="advMyEst">0.0000</span></div>
+            <div class="apv" style="color:var(--teal);font-size:22px;text-shadow:0 0 14px rgba(0,212,170,.4)">◎<span id="advMyEst">0.0000</span></div>
             <div class="aps">Basado en tu stage actual</div>
           </div>
         </div>
@@ -1107,13 +1093,13 @@ h1,h2,h3 { font-family: 'Cinzel', serif; }
           <div class="lvfl" id="lvFlash"></div>
           <div class="combo-d" id="comboDis"><div class="combo-num" id="comboNum">2x</div><div class="combo-lbl">COMBO</div></div>
           <!-- 4 hero slots -->
-          <div class="hero-wrap" id="hWrap0" style="bottom:50px;left:218px"><svg id="hSvg0" width="62" height="80" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg"></svg></div>
-          <div class="hero-wrap" id="hWrap1" style="bottom:50px;left:148px"><svg id="hSvg1" width="62" height="80" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg"></svg></div>
-          <div class="hero-wrap" id="hWrap2" style="bottom:50px;left:78px"><svg id="hSvg2" width="62" height="80" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg"></svg></div>
-          <div class="hero-wrap" id="hWrap3" style="bottom:50px;left:8px"><svg id="hSvg3" width="62" height="80" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg"></svg></div>
+          <div class="hero-wrap" id="hWrap0" style="bottom:50px;left:8px"><svg id="hSvg0" width="62" height="80" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg"></svg></div>
+          <div class="hero-wrap" id="hWrap1" style="bottom:50px;left:78px"><svg id="hSvg1" width="62" height="80" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg"></svg></div>
+          <div class="hero-wrap" id="hWrap2" style="bottom:50px;left:148px"><svg id="hSvg2" width="62" height="80" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg"></svg></div>
+          <div class="hero-wrap" id="hWrap3" style="bottom:50px;left:218px"><svg id="hSvg3" width="62" height="80" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg"></svg></div>
           <!-- Enemy -->
           <!-- MULTI ENEMY SLOTS (up to 5 based on stage) -->
-          <!-- enemies appended directly to canvas by JS -->
+          <div id="enemySlots" style="position:absolute;inset:0;pointer-events:none;z-index:18"></div>
           <!-- Stage flash overlay -->
           <div class="stage-flash" id="stageFlash"><div class="stage-flash-inner" id="stageFlashTxt"></div></div>
         </div>
@@ -1507,7 +1493,7 @@ const G={
 const A={
   world:1,stage:1,wave:1,waveMax:10,
   active:false,raf:null,lastTick:0,selectedHero:0,
-  heroes:[0,1,2,3].map(i=>({hp:0,maxHp:0,xp:0,xpNeeded:100,lv:1,pos:[218,148,78,8][i],atkCd:0,alive:true,unlocked:i===0,gear:{},inventory:[]})),
+  heroes:[0,1,2,3].map(i=>({hp:0,maxHp:0,xp:0,xpNeeded:100,lv:1,pos:6+i*38,atkCd:0,alive:true,unlocked:i===0,gear:{},inventory:[]})),
   enemyAlive:false,enemyHp:0,enemyMaxHp:0,
   enemyAtk:0,enemyCol:'#44cc44',enemyName:'?',enemyXp:10,enemySh:'slime',isBoss:false,enemyGold:1,enemyPos:355,
   regenTick:0,enCd:0,kills:0,totalXp:0,
@@ -1623,202 +1609,31 @@ function renderCharHero(){
 }
 
 // ENEMY SVG
-function eSvg(sh,col,boss){
-  // Each enemy is drawn at viewBox 0 0 54 62
-  // Solid fills, clear outlines - designed to be visible on dark backgrounds
-  const c=col;
-  const out='rgba(0,0,0,0.7)'; // dark outline
-  const E={
-    slime:`
-      <ellipse cx="27" cy="42" rx="20" ry="13" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <ellipse cx="27" cy="30" rx="13" ry="15" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <circle cx="21" cy="28" r="4" fill="white"/>
-      <circle cx="33" cy="28" r="4" fill="white"/>
-      <circle cx="22" cy="27" r="2.5" fill="#111"/>
-      <circle cx="34" cy="27" r="2.5" fill="#111"/>
-      <circle cx="22.8" cy="26.2" r="1" fill="white"/>
-      <circle cx="34.8" cy="26.2" r="1" fill="white"/>
-      <path d="M22,35 Q27,38 32,35" fill="none" stroke="${out}" stroke-width="1.5" stroke-linecap="round"/>
-    `,
-    goblin:`
-      <ellipse cx="27" cy="38" rx="11" ry="16" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <ellipse cx="27" cy="20" rx="12" ry="13" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <polygon points="16,10 19,20 13,18" fill="${c}" stroke="${out}" stroke-width="1"/>
-      <polygon points="38,10 35,20 41,18" fill="${c}" stroke="${out}" stroke-width="1"/>
-      <circle cx="22" cy="18" r="3.5" fill="white"/>
-      <circle cx="32" cy="18" r="3.5" fill="white"/>
-      <circle cx="22" cy="18" r="2" fill="#cc0000"/>
-      <circle cx="32" cy="18" r="2" fill="#cc0000"/>
-      <path d="M21,27 L23,30 L25,27" fill="none" stroke="${out}" stroke-width="1.2"/>
-      <path d="M29,27 L31,30 L33,27" fill="none" stroke="${out}" stroke-width="1.2"/>
-      <rect x="20" y="33" width="14" height="1.5" rx="0.7" fill="${out}" opacity="0.5"/>
-    `,
-    beast:`
-      <ellipse cx="27" cy="36" rx="14" ry="18" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <ellipse cx="27" cy="17" rx="12" ry="12" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <path d="M13,8 Q11,3 15,5 Q16,12 18,14" fill="${c}" stroke="${out}" stroke-width="1"/>
-      <path d="M41,8 Q43,3 39,5 Q38,12 36,14" fill="${c}" stroke="${out}" stroke-width="1"/>
-      <circle cx="22" cy="15" r="4" fill="#ffcc00"/>
-      <circle cx="32" cy="15" r="4" fill="#ffcc00"/>
-      <circle cx="22" cy="15.5" r="2.2" fill="#222"/>
-      <circle cx="32" cy="15.5" r="2.2" fill="#222"/>
-      <path d="M22,24 L25,28 L27,25 L29,28 L32,24" fill="none" stroke="${out}" stroke-width="1.3"/>
-    `,
-    skel:`
-      <ellipse cx="27" cy="38" rx="10" ry="16" fill="#c8d0dc" stroke="${out}" stroke-width="1.5"/>
-      <ellipse cx="27" cy="17" rx="11" ry="12" fill="#d8e0ec" stroke="${out}" stroke-width="1.5"/>
-      <rect x="20" cy="8" width="6" height="6" rx="1.5" fill="#111" x="20" y="8"/>
-      <rect x="28" y="8" width="6" height="6" rx="1.5" fill="#111"/>
-      <line x1="19" y1="30" x2="35" y2="30" stroke="${out}" stroke-width="1"/>
-      <line x1="21" y1="36" x2="33" y2="36" stroke="${out}" stroke-width="1"/>
-      <line x1="23" y1="42" x2="31" y2="42" stroke="${out}" stroke-width="1"/>
-      <path d="M21,24 Q27,21 33,24" fill="none" stroke="${out}" stroke-width="1.2"/>
-    `,
-    orc:`
-      <ellipse cx="27" cy="38" rx="15" ry="18" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <ellipse cx="27" cy="18" rx="13" ry="13" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <polygon points="17,8 20,18 14,16" fill="${c}" stroke="${out}" stroke-width="1"/>
-      <polygon points="37,8 34,18 40,16" fill="${c}" stroke="${out}" stroke-width="1"/>
-      <circle cx="21" cy="16" r="4.5" fill="#ffaa00"/>
-      <circle cx="33" cy="16" r="4.5" fill="#ffaa00"/>
-      <circle cx="21" cy="16.5" r="2.5" fill="#111"/>
-      <circle cx="33" cy="16.5" r="2.5" fill="#111"/>
-      <path d="M20,25 L22,29 L24,26 L27,30 L30,26 L32,29 L34,25" fill="none" stroke="#ffaa00" stroke-width="1.5"/>
-    `,
-    mage:`
-      <ellipse cx="27" cy="38" rx="12" ry="17" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <circle cx="27" cy="16" r="12" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <path d="M15,6 L27,1 L39,6 L36,14 L18,14 Z" fill="${c}" stroke="${out}" stroke-width="1"/>
-      <circle cx="22" cy="13" r="4" fill="white"/>
-      <circle cx="32" cy="13" r="4" fill="white"/>
-      <circle cx="22" cy="13" r="2.5" fill="#4400cc"/>
-      <circle cx="32" cy="13" r="2.5" fill="#4400cc"/>
-      <circle cx="44" cy="28" r="9" fill="${c}" opacity=".7" stroke="${out}" stroke-width="1.5"/>
-      <circle cx="44" cy="28" r="5" fill="white" opacity=".6"/>
-    `,
-    troll:`
-      <ellipse cx="27" cy="38" rx="18" ry="18" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <ellipse cx="27" cy="17" rx="15" ry="14" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <circle cx="21" cy="15" r="5" fill="#886644"/>
-      <circle cx="33" cy="15" r="5" fill="#886644"/>
-      <circle cx="21" cy="15" r="2.5" fill="#222"/>
-      <circle cx="33" cy="15" r="2.5" fill="#222"/>
-      <ellipse cx="27" cy="23" rx="5" ry="3" fill="#886644" stroke="${out}" stroke-width="1"/>
-    `,
-    dragon:`
-      <path d="M27,50 L10,44 L8,30 L14,16 Q20,5 27,4 Q34,5 40,16 L46,30 L44,44 Z" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <path d="M6,26 Q1,18 5,10" fill="${c}" stroke="${out}" stroke-width="2" stroke-linecap="round"/>
-      <path d="M48,26 Q53,18 49,10" fill="${c}" stroke="${out}" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="21" cy="20" r="5.5" fill="white"/>
-      <circle cx="33" cy="20" r="5.5" fill="white"/>
-      <circle cx="21" cy="20" r="3" fill="#dd2200"/>
-      <circle cx="33" cy="20" r="3" fill="#dd2200"/>
-      <path d="M19,31 L22,35 L27,32 L32,35 L35,31" fill="none" stroke="#ffaa00" stroke-width="2"/>
-    `,
-    elem:`
-      <circle cx="27" cy="27" r="22" fill="${c}" opacity=".3" stroke="${c}" stroke-width="2"/>
-      <circle cx="27" cy="27" r="16" fill="${c}" opacity=".5" stroke="${c}" stroke-width="2"/>
-      <circle cx="27" cy="27" r="10" fill="${c}" opacity=".8" stroke="${c}" stroke-width="2"/>
-      <circle cx="27" cy="27" r="5" fill="white" opacity=".9"/>
-      <circle cx="18" cy="17" r="4" fill="white" opacity=".85"/>
-      <circle cx="36" cy="17" r="4" fill="white" opacity=".85"/>
-      <circle cx="18" cy="17" r="2" fill="${c}"/>
-      <circle cx="36" cy="17" r="2" fill="${c}"/>
-    `,
-    lich:`
-      <ellipse cx="27" cy="40" rx="11" ry="14" fill="#0a0520" stroke="${c}" stroke-width="2"/>
-      <ellipse cx="27" cy="20" rx="12" ry="13" fill="#0a0520" stroke="${c}" stroke-width="2"/>
-      <polygon points="21,5 27,0 33,5" fill="${c}" stroke="${out}" stroke-width="1"/>
-      <circle cx="21" cy="17" r="5" fill="${c}"/>
-      <circle cx="33" cy="17" r="5" fill="${c}"/>
-      <circle cx="21" cy="17" r="2.5" fill="white"/>
-      <circle cx="33" cy="17" r="2.5" fill="white"/>
-      <path d="M19,28 Q27,25 35,28" fill="none" stroke="${c}" stroke-width="1.5"/>
-    `,
-    bSlime:`
-      <ellipse cx="27" cy="44" rx="23" ry="15" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <ellipse cx="27" cy="28" rx="18" ry="20" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <polygon points="12,6 16,20 8,18" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <polygon points="42,6 38,20 46,18" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <circle cx="20" cy="24" r="6" fill="white"/>
-      <circle cx="34" cy="24" r="6" fill="white"/>
-      <circle cx="20" cy="25" r="3.5" fill="#111"/>
-      <circle cx="34" cy="25" r="3.5" fill="#111"/>
-      <circle cx="21.2" cy="23.5" r="1.5" fill="white"/>
-      <circle cx="35.2" cy="23.5" r="1.5" fill="white"/>
-    `,
-    bGob:`
-      <ellipse cx="27" cy="40" rx="14" ry="17" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <ellipse cx="27" cy="18" rx="15" ry="15" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <polygon points="13,4 17,18 10,16" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <polygon points="41,4 37,18 44,16" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <circle cx="20" cy="15" r="5.5" fill="white"/>
-      <circle cx="34" cy="15" r="5.5" fill="white"/>
-      <circle cx="20" cy="15" r="3" fill="#cc0000"/>
-      <circle cx="34" cy="15" r="3" fill="#cc0000"/>
-      <path d="M18,26 L22,32 L27,28 L32,32 L36,26" fill="none" stroke="#ffaa00" stroke-width="2"/>
-    `,
-    bBeast:`
-      <ellipse cx="27" cy="38" rx="18" ry="20" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <ellipse cx="27" cy="16" rx="15" ry="15" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <path d="M8,5 Q6,0 10,2 Q13,12 16,16" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <path d="M46,5 Q48,0 44,2 Q41,12 38,16" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <circle cx="20" cy="13" r="6" fill="#ffcc00"/>
-      <circle cx="34" cy="13" r="6" fill="#ffcc00"/>
-      <circle cx="20" cy="14" r="3.5" fill="#111"/>
-      <circle cx="34" cy="14" r="3.5" fill="#111"/>
-    `,
-    bSkel:`
-      <ellipse cx="27" cy="38" rx="13" ry="17" fill="#c0c8d8" stroke="${out}" stroke-width="2"/>
-      <ellipse cx="27" cy="16" rx="14" ry="14" fill="#d0d8e8" stroke="${out}" stroke-width="2"/>
-      <rect x="17" y="6" width="8" height="8" rx="2" fill="#111"/>
-      <rect x="29" y="6" width="8" height="8" rx="2" fill="#111"/>
-      <path d="M18,26 L36,26 M20,32 L34,32 M22,38 L32,38 M24,44 L30,44" stroke="${out}" stroke-width="1.5"/>
-      <polygon points="27,2 32,10 22,10" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-    `,
-    bOrc:`
-      <ellipse cx="27" cy="40" rx="20" ry="19" fill="${c}" stroke="${out}" stroke-width="2.5"/>
-      <ellipse cx="27" cy="17" rx="17" ry="16" fill="${c}" stroke="${out}" stroke-width="2.5"/>
-      <polygon points="15,4 19,18 11,16" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <polygon points="39,4 35,18 43,16" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <circle cx="20" cy="14" r="6" fill="#ffaa00"/>
-      <circle cx="34" cy="14" r="6" fill="#ffaa00"/>
-      <circle cx="20" cy="14.5" r="3.5" fill="#111"/>
-      <circle cx="34" cy="14.5" r="3.5" fill="#111"/>
-    `,
-    bMage:`
-      <ellipse cx="27" cy="40" rx="15" ry="18" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <circle cx="27" cy="16" r="15" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <path d="M12,5 L27,0 L42,5 L38,14 L16,14 Z" fill="${c}" stroke="${out}" stroke-width="1.5"/>
-      <circle cx="21" cy="12" r="6" fill="white"/>
-      <circle cx="33" cy="12" r="6" fill="white"/>
-      <circle cx="21" cy="12" r="3.5" fill="#6600cc"/>
-      <circle cx="33" cy="12" r="3.5" fill="#6600cc"/>
-      <circle cx="46" cy="24" r="11" fill="${c}" opacity=".8" stroke="${out}" stroke-width="1.5"/>
-      <circle cx="46" cy="24" r="6" fill="white" opacity=".7"/>
-    `,
-    bDragon:`
-      <path d="M27,56 L8,48 L5,32 L10,16 Q17,3 27,2 Q37,3 44,16 L49,32 L46,48 Z" fill="${c}" stroke="${out}" stroke-width="2"/>
-      <path d="M4,28 Q-2,18 2,8" fill="${c}" stroke="${out}" stroke-width="3" stroke-linecap="round"/>
-      <path d="M50,28 Q56,18 52,8" fill="${c}" stroke="${out}" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="20" cy="18" r="7" fill="white"/>
-      <circle cx="34" cy="18" r="7" fill="white"/>
-      <circle cx="20" cy="19" r="4" fill="#dd2200"/>
-      <circle cx="34" cy="19" r="4" fill="#dd2200"/>
-      <path d="M17,32 L21,38 L27,33 L33,38 L37,32" fill="none" stroke="#ffaa00" stroke-width="2.5"/>
-    `,
-    bVoid:`
-      <circle cx="27" cy="27" r="24" fill="${c}" opacity=".9" stroke="${c}" stroke-width="2"/>
-      <circle cx="27" cy="27" r="16" fill="#0a0018" opacity=".95"/>
-      <circle cx="27" cy="27" r="8" fill="${c}" opacity=".8"/>
-      <circle cx="18" cy="20" r="6" fill="${c}"/>
-      <circle cx="36" cy="20" r="6" fill="${c}"/>
-      <circle cx="18" cy="20" r="3" fill="white"/>
-      <circle cx="36" cy="20" r="3" fill="white"/>
-      ${Array.from({length:8},(_,i)=>{const a=i*45*Math.PI/180;return`<circle cx="${27+Math.cos(a)*26}" cy="${27+Math.sin(a)*26}" r="3" fill="${col}" opacity=".7"/>`;}).join('')}
-    `
+function eSvg(sh,col,boss,hpPct=1){
+  const c=col,hw=Math.round(50*hpPct);
+  const hb=`<rect x="2" y="55" width="50" height="5" rx="2" fill="rgba(0,0,0,.6)"/><rect x="2" y="55" width="${hw}" height="5" rx="2" fill="${hpPct>.5?'#44cc44':hpPct>.25?'#ffcc00':'#ff3333'}"/>`;
+  const g=boss?`<ellipse cx="27" cy="30" rx="22" ry="26" fill="${c}" opacity=".07"/>`:``
+  const B={
+    slime:`${g}<ellipse cx="27" cy="37" rx="19" ry="14" fill="${c}" opacity=".92"/><ellipse cx="27" cy="22" rx="8" ry="10" fill="${c}" opacity=".6"/><ellipse cx="20" cy="34" rx="4" ry="4" fill="#fff"/><ellipse cx="34" cy="34" rx="4" ry="4" fill="#fff"/><ellipse cx="20" cy="34" rx="2" ry="2" fill="#222"/><ellipse cx="34" cy="34" rx="2" ry="2" fill="#222"/>`,
+    goblin:`${g}<ellipse cx="27" cy="29" rx="13" ry="16" fill="${c}"/><polygon points="18,10 20,18 14,17" fill="${c}"/><polygon points="36,10 34,18 40,17" fill="${c}"/><ellipse cx="21" cy="25" rx="4" ry="4" fill="#fff"/><ellipse cx="33" cy="25" rx="4" ry="4" fill="#fff"/><ellipse cx="21" cy="25" rx="2" ry="2" fill="#f00"/><ellipse cx="33" cy="25" rx="2" ry="2" fill="#f00"/>`,
+    beast:`${g}<ellipse cx="27" cy="31" rx="15" ry="18" fill="${c}"/><path d="M13,10 Q19,20 15,28 M41,10 Q35,20 39,28" fill="none" stroke="${c}" stroke-width="3.5"/><ellipse cx="21" cy="27" rx="4.5" ry="4.5" fill="#ffaa00"/><ellipse cx="33" cy="27" rx="4.5" ry="4.5" fill="#ffaa00"/>`,
+    skel:`${g}<ellipse cx="27" cy="12" rx="10" ry="12" fill="#d0d8e0" stroke="#a0a8b0" stroke-width="1"/><rect x="19" y="7" width="6" height="6" rx="1.5" fill="#222"/><rect x="29" y="7" width="6" height="6" rx="1.5" fill="#222"/><rect x="21" y="23" width="12" height="22" rx="3" fill="#c0c8d0"/>`,
+    orc:`${g}<ellipse cx="27" cy="31" rx="17" ry="21" fill="${c}"/><polygon points="19,12 22,22 15,20" fill="${c}"/><polygon points="35,12 32,22 39,20" fill="${c}"/><ellipse cx="20" cy="28" rx="5" ry="5" fill="#ff8800"/><ellipse cx="34" cy="28" rx="5" ry="5" fill="#ff8800"/>`,
+    mage:`${g}<circle cx="27" cy="14" r="11" fill="${c}"/><ellipse cx="20" cy="11" rx="4.5" ry="4.5" fill="#fff"/><ellipse cx="34" cy="11" rx="4.5" ry="4.5" fill="#fff"/><ellipse cx="20" cy="11" rx="2.2" ry="2.8" fill="#6644ff"/><ellipse cx="34" cy="11" rx="2.2" ry="2.8" fill="#6644ff"/><rect x="19" y="23" width="16" height="25" rx="4.5" fill="${c}"/><circle cx="43" cy="21" r="8" fill="#aa66ff" opacity=".88"/>`,
+    troll:`${g}<ellipse cx="27" cy="33" rx="19" ry="23" fill="${c}"/><ellipse cx="19" cy="29" rx="6.5" ry="6.5" fill="#887755"/><ellipse cx="35" cy="29" rx="6.5" ry="6.5" fill="#887755"/>`,
+    dragon:`${g}<path d="M8,46 Q4,30 8,20 Q14,8 27,6 Q40,8 46,20 Q50,30 46,46" fill="${c}"/><path d="M6,20 Q0,14 4,7" fill="${c}" stroke="${c}" stroke-width="3.5"/><path d="M48,20 Q54,14 50,7" fill="${c}" stroke="${c}" stroke-width="3.5"/><ellipse cx="19" cy="21" rx="6.5" ry="5.5" fill="#fff"/><ellipse cx="35" cy="21" rx="6.5" ry="5.5" fill="#fff"/><ellipse cx="19" cy="21" rx="3.2" ry="3.8" fill="#ff4400"/><ellipse cx="35" cy="21" rx="3.2" ry="3.8" fill="#ff4400"/>`,
+    elem:`${g}<circle cx="27" cy="27" r="20" fill="${c}" opacity=".85"/><circle cx="27" cy="27" r="13" fill="${c}" opacity=".6"/><circle cx="27" cy="27" r="7" fill="#fff" opacity=".35"/><circle cx="19" cy="21" r="5" fill="#fff" opacity=".9"/><circle cx="35" cy="21" r="5" fill="#fff" opacity=".9"/>`,
+    lich:`${g}<ellipse cx="27" cy="27" rx="14" ry="19" fill="#1a0a2a" stroke="${c}" stroke-width="2.2"/><ellipse cx="20" cy="21" rx="5" ry="5" fill="${c}"/><ellipse cx="34" cy="21" rx="5" ry="5" fill="${c}"/><polygon points="21,7 27,0 33,7" fill="${c}"/>`,
+    bSlime:`${g}<ellipse cx="27" cy="33" rx="22" ry="16" fill="${c}" opacity=".92"/><polygon points="17,7 19,20 13,18" fill="${c}"/><polygon points="37,7 35,20 41,18" fill="${c}"/><ellipse cx="18" cy="27" rx="5.5" ry="5.5" fill="#fff"/><ellipse cx="36" cy="27" rx="5.5" ry="5.5" fill="#fff"/>`,
+    bGob:`${g}<ellipse cx="27" cy="29" rx="15" ry="20" fill="${c}"/><polygon points="16,5 20,16 11,14" fill="${c}"/><polygon points="38,5 34,16 43,14" fill="${c}"/><ellipse cx="19" cy="24" rx="5.5" ry="5.5" fill="#ffaa00"/><ellipse cx="35" cy="24" rx="5.5" ry="5.5" fill="#ffaa00"/>`,
+    bBeast:`${g}<ellipse cx="27" cy="31" rx="19" ry="23" fill="${c}"/><path d="M8,5 Q14,18 10,28 M46,5 Q40,18 44,28" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"/><ellipse cx="19" cy="26" rx="5.5" ry="5.5" fill="#ffaa00"/><ellipse cx="35" cy="26" rx="5.5" ry="5.5" fill="#ffaa00"/>`,
+    bSkel:`${g}<ellipse cx="27" cy="12" rx="12" ry="13" fill="#d0d8e0" stroke="#a0a8b0" stroke-width="1.5"/><rect x="18" y="7" width="7" height="7" rx="2" fill="#111"/><rect x="29" y="7" width="7" height="7" rx="2" fill="#111"/><rect x="19" y="24" width="16" height="26" rx="3.5" fill="#c0c8d0"/>`,
+    bOrc:`${g}<ellipse cx="27" cy="31" rx="21" ry="25" fill="${c}"/><polygon points="17,10 21,22 13,20" fill="${c}"/><polygon points="37,10 33,22 41,20" fill="${c}"/><ellipse cx="18" cy="26" rx="6.5" ry="6.5" fill="#ff8800"/><ellipse cx="36" cy="26" rx="6.5" ry="6.5" fill="#ff8800"/>`,
+    bMage:`${g}<circle cx="27" cy="14" r="12" fill="${c}"/><ellipse cx="19" cy="10" rx="5" ry="5" fill="#fff"/><ellipse cx="35" cy="10" rx="5" ry="5" fill="#fff"/><rect x="18" y="25" width="18" height="28" rx="5" fill="${c}"/><circle cx="44" cy="20" r="10" fill="#aa66ff" opacity=".88"/>`,
+    bDragon:`${g}<path d="M7,47 Q3,29 7,17 Q13,4 27,2 Q41,4 47,17 Q51,29 47,47" fill="${c}"/><path d="M5,17 Q-3,10 1,2" fill="${c}" stroke="${c}" stroke-width="4.5"/><path d="M49,17 Q57,10 53,2" fill="${c}" stroke="${c}" stroke-width="4.5"/><ellipse cx="18" cy="18" rx="7.5" ry="6.5" fill="#fff"/><ellipse cx="36" cy="18" rx="7.5" ry="6.5" fill="#fff"/>`,
+    bVoid:`${g}<circle cx="27" cy="27" r="22" fill="${c}" opacity=".9"/><circle cx="27" cy="27" r="14" fill="${c}" opacity=".7"/><circle cx="27" cy="27" r="8" fill="#220044" opacity=".9"/><circle cx="18" cy="21" r="5.5" fill="#aa44ff"/><circle cx="36" cy="21" r="5.5" fill="#aa44ff"/><circle cx="18" cy="21" r="2.8" fill="#fff"/><circle cx="36" cy="21" r="2.8" fill="#fff"/>${Array.from({length:8},(_,i)=>{const a=i*45*Math.PI/180;return`<circle cx="${27+Math.cos(a)*24}" cy="${27+Math.sin(a)*24}" r="2.5" fill="${c}" opacity=".55"/>`;}).join('')}`
   };
-  return E[sh]||E.slime;
+  return(B[sh]||B.slime)+hb;
 }
 
 // BOSS ART
@@ -1916,47 +1731,37 @@ function enemyCount(){
 }
 
 function spawnEnemyGroup(){
-  // Remove old enemy elements from canvas directly
-  document.querySelectorAll('.enemy-slot-live').forEach(el=>el.remove());
-  EG=[];EG_DEAD=0;
-  const canvas=$i('advCanvas');
-  if(!canvas)return;
-  const count=enemyCount(),isBoss=A.isBossWave;
-  // Enemy X positions: fixed, heroes are at 8-218px on left
-  // Enemies appear on RIGHT side: 320-680px range
-  const EPOS=[480,390,570,330,650,440,520,360,610,500];
+  // Clear old slots
+  const container=$i('enemySlots');if(!container)return;
+  container.innerHTML='';EG=[];EG_DEAD=0;
+  const count=enemyCount(),abs=totS(),isBoss=A.isBossWave;
   for(let e=0;e<count;e++){
     const en=advGetSingleEnemy(isBoss);
-    const baseX=isBoss?490:(EPOS[e%EPOS.length]);
-    const W=isBoss?88:68, H=isBoss?104:80;
-    // Create wrapper div - SAME WAY as hero-wrap (direct child of advCanvas)
-    const wrap=document.createElement('div');
-    wrap.className='hero-wrap enemy-slot-live';
-    wrap.style.cssText=`bottom:50px;left:${baseX}px;z-index:22;display:flex;flex-direction:column;align-items:center;cursor:default`;
-    // Name tag (above SVG)
-    const tag=document.createElement('div');
-    tag.className='enemy-name-tag';
-    tag.style.cssText=`font-size:${isBoss?11:9}px;font-family:'Cinzel',serif;font-weight:700;color:${en.col};text-shadow:0 0 10px ${en.col},0 1px 3px #000e;white-space:nowrap;margin-bottom:2px;text-align:center;letter-spacing:.5px`;
-    tag.textContent=en.name;
-    // SVG enemy
-    const svgEl=document.createElementNS('http://www.w3.org/2000/svg','svg');
-    svgEl.setAttribute('width',String(W));
-    svgEl.setAttribute('height',String(H));
+    // Space enemies horizontally
+    const cw=($i("advCanvas")||{clientWidth:790}).clientWidth||790;const spread=Math.min(52,Math.floor((cw-280)/Math.max(1,count-1)));const baseX=isBoss?Math.floor(cw*.55):Math.min(cw-90,230+e*Math.max(55,spread));
+    // Enemy slot div
+    const W=isBoss?96:72,H=isBoss?112:88;
+    const slot=document.createElement('div');
+    slot.style.cssText=`position:absolute;bottom:50px;left:${baseX}px;z-index:18;display:flex;flex-direction:column;align-items:center`;
+    // SVG (mirror so enemy faces left toward heroes)
+    const svgEl=document.createElement('svg');
+    svgEl.setAttribute('width',String(W));svgEl.setAttribute('height',String(H));
     svgEl.setAttribute('viewBox','0 0 54 62');
-    svgEl.style.cssText=`display:block;overflow:visible;filter:drop-shadow(0 0 8px ${en.col}) drop-shadow(0 3px 6px rgba(0,0,0,.8))`;
+    svgEl.style.cssText=`display:block;transform:scaleX(-1);filter:drop-shadow(0 0 10px ${en.col}88) drop-shadow(0 2px 6px #000a)`;
     svgEl.innerHTML=eSvg(en.sh,en.col,isBoss,1);
-    // HP bar container
-    const hpOuter=document.createElement('div');
-    hpOuter.style.cssText=`width:${isBoss?72:52}px;height:6px;background:rgba(0,0,0,.75);border-radius:3px;overflow:hidden;margin-top:3px;border:1px solid rgba(255,255,255,.15)`;
+    // Name tag above
+    const tag=document.createElement('div');
+    tag.style.cssText=`font-size:${isBoss?12:10}px;font-family:'Cinzel',serif;font-weight:700;color:${en.col};text-shadow:0 0 12px ${en.col}88,0 1px 4px #000f;white-space:nowrap;margin-bottom:3px;text-align:center;letter-spacing:1px`;
+    tag.textContent=en.name;
+    // HP bar below
+    const hpWrap=document.createElement('div');
+    hpWrap.style.cssText=`width:${isBoss?80:58}px;height:7px;background:rgba(0,0,0,.7);border-radius:4px;overflow:hidden;margin-top:3px;border:1px solid rgba(255,255,255,.1)`;
     const hpFill=document.createElement('div');
-    hpFill.style.cssText=`height:100%;width:100%;background:linear-gradient(90deg,#0a6600,#22cc22);border-radius:2px;transition:width .15s ease-out`;
-    hpOuter.appendChild(hpFill);
-    wrap.appendChild(tag);
-    wrap.appendChild(svgEl);
-    wrap.appendChild(hpOuter);
-    canvas.appendChild(wrap);
-    EG.push({...en,pos:baseX,el:wrap,svgEl,hpEl:hpFill,tagEl:tag,alive:true,
-             enCd:900+Math.random()*800+e*180,maxHp:en.hp,isBoss});
+    hpFill.style.cssText=`height:100%;width:100%;background:linear-gradient(90deg,#116600,#44cc44);border-radius:3px;transition:width .12s`;
+    hpWrap.appendChild(hpFill);
+    slot.appendChild(tag);slot.appendChild(svgEl);slot.appendChild(hpWrap);
+    container.appendChild(slot);
+    EG.push({...en,pos:baseX,el:slot,svgEl,hpEl:hpFill,tagEl:tag,alive:true,enCd:1100+Math.random()*700+e*200});
   }
 }
 
@@ -1985,8 +1790,7 @@ function enemyHit(eObj,dmg){
   if(eObj.hpEl){eObj.hpEl.style.width=(pct*100)+'%';eObj.hpEl.style.background=pct>0.5?'linear-gradient(90deg,#1a6600,#44cc44)':pct>0.25?'linear-gradient(90deg,#665500,#ffcc00)':'linear-gradient(90deg,#660000,#ff3333)';}
   eObj.svgEl.innerHTML=eSvg(eObj.sh,eObj.col,eObj.isBoss,pct);
   // Hit flash
-  // Flash: bright white then back to color glow
-  if(eObj.svgEl){eObj.svgEl.style.filter='drop-shadow(0 0 20px #fff) brightness(3)';setTimeout(()=>{if(eObj.svgEl)eObj.svgEl.style.filter=`drop-shadow(0 0 8px ${eObj.col}) drop-shadow(0 3px 6px rgba(0,0,0,.8))`;},80);}
+  eObj.el.classList.remove(eObj.isBoss?'boss-hit':'enemy-hit');void eObj.el.offsetWidth;eObj.el.classList.add(eObj.isBoss?'boss-hit':'enemy-hit');
   if(eObj.hp<=0){eObj.alive=false;killEnemy(eObj);}
 }
 
@@ -1995,9 +1799,8 @@ function killEnemy(eObj){
   // Death particles
   spawnParts(eObj.pos+24,52,eObj.col);
   // Fade out slot
-  eObj.el.style.transition='opacity .3s ease-out,transform .3s ease-out';
-  eObj.el.style.opacity='0';eObj.el.style.transform='translateY(-30px) scale(.7)';
-  setTimeout(()=>{if(eObj.el&&eObj.el.parentNode)eObj.el.parentNode.removeChild(eObj.el);},320);
+  eObj.el.style.transition='opacity .4s';eObj.el.style.opacity='0';
+  setTimeout(()=>{if(eObj.el.parentNode)eObj.el.parentNode.removeChild(eObj.el);},420);
   // XP + gold split
   const tb=getT(),rb=getRelicB(),xpM=1+(tb.xp+rb.xp)*.01,xp=Math.floor(eObj.xp*xpM);
   const alive=A.heroes.filter((h,i)=>h.alive&&isHeroUnlocked(i));
@@ -2199,7 +2002,7 @@ function advKill(){
 }
 function advDeath(){
   // Clear enemy slots
-  document.querySelectorAll('.enemy-slot-live').forEach(el=>el.remove());EG=[];
+  const container=$i('enemySlots');if(container)container.innerHTML='';EG=[];
   // Revive heroes with partial HP
   A.heroes.forEach((_,i)=>{if(!isHeroUnlocked(i))return;const st=calcHero(i);A.heroes[i].hp=Math.floor(st.hp*.35);A.heroes[i].alive=true;});
   renderPartyBars();
@@ -2535,129 +2338,130 @@ updateUI();updatePityUI();renderTalentGrid();renderRelicGrid();renderAch();updat
 setInterval(tickTimer,1000);setInterval(simOthers,3200);
 setInterval(()=>{G.players+=rng(-2,5);G.players=Math.max(150,G.players);if($i('playersD'))$i('playersD').textContent=G.players;},8000);
 A.active=true;A.isBossWave=false;advSpawnNew();A.raf=requestAnimationFrame(advTick);
-// ── BLOCKCHAIN INTEGRATION ─────────────────────────────────────────────────
-// Carga solboss_wallet.js si está disponible, si no usa modo offline
-async function connectWalletGame() {
-  // Redirige a MetaMask BSC
-  if(typeof connectMetaMask !== 'undefined') {
-    await connectMetaMask();
-    return;
-  }
-  const btn = document.getElementById('connectWalletBtn');
-  if(btn) btn.textContent = '⏳ Conectando...';
-  
-  if(typeof SolBossWallet !== 'undefined') {
-    await SolBossWallet.connect();
-    return;
-  }
-  
-  // Fallback
-  try {
-    const solana = window.solana;
-    if(solana && solana.isPhantom) {
-      await solana.connect();
-      const addr = solana.publicKey.toString();
-      const short = addr.slice(0,4)+'...'+addr.slice(-4);
-      
-      document.getElementById('walletStatus').style.display='block';
-      document.getElementById('walletAddr').textContent = addr;
-      document.getElementById('connectWalletBtn').textContent = '🔗 '+short;
-      document.getElementById('connectWalletBtn').style.background = 'linear-gradient(135deg,#006644,#00cc88)';
-      document.getElementById('connectWalletBtn').onclick = () => {
-        solana.disconnect();
-        document.getElementById('walletStatus').style.display='none';
-        document.getElementById('connectWalletBtn').textContent = '🔗 Conectar Phantom / Solflare';
-        document.getElementById('connectWalletBtn').style.background = '';
-        document.getElementById('connectWalletBtn').onclick = connectWalletGame;
-        addEv('<span class="eg">🔌 Wallet desconectada</span>');
-      };
-      
-      // Cargar balance real
-      try {
-        const conn = new solanaWeb3.Connection('https://api.devnet.solana.com', 'confirmed');
-        const bal  = await conn.getBalance(solana.publicKey);
-        G.wallet   = bal / 1_000_000_000;
-        document.getElementById('walletHdr').textContent = G.wallet.toFixed(4);
-        document.getElementById('walletBalanceLive').textContent = G.wallet.toFixed(4);
-      } catch(e) { console.warn('Balance load:', e.message); }
-      
-      addEv('<span class="et">🔗 Phantom conectado: '+short+'</span>');
-    } else if(window.solflare && window.solflare.isSolflare) {
-      await window.solflare.connect();
-      const addr = window.solflare.publicKey.toString();
-      document.getElementById('connectWalletBtn').textContent = '🔗 '+addr.slice(0,4)+'...'+addr.slice(-4);
-      addEv('<span class="et">🔗 Solflare conectado</span>');
-    } else {
-      // No wallet detected
-      if(btn) btn.textContent = '🔗 Instalar Phantom';
-      if(btn) btn.onclick = () => window.open('https://phantom.app','_blank');
-      addEv('<span class="eg">⚠ Instala Phantom en phantom.app para jugar con SOL real</span>');
+</script>
+<script>
+var _BSC={chainId:'0x61',chainName:'BSC Testnet',nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},rpcUrls:['https://data-seed-prebsc-1-s1.binance.org:8545/'],blockExplorerUrls:['https://testnet.bscscan.com/']};
+var _TEST=true;
+var _CADDR='0x0000000000000000000000000000000000000000';
+var _w3=null,_ct=null,_acc=null,_ok=false;
+
+function _getMM(){
+  var e=window.ethereum;
+  if(!e)return null;
+  if(e.providers&&e.providers.length){
+    for(var i=0;i<e.providers.length;i++){
+      var p=e.providers[i];
+      if(p.isMetaMask&&!p.isTrust&&!p.isTrustWallet&&!p.isCoinbaseWallet)return p;
     }
-  } catch(e) {
-    if(btn) btn.textContent = '🔗 Conectar Phantom / Solflare';
-    addEv('<span class="eg">⚠ Error conectando wallet: '+e.message+'</span>');
+    return null;
   }
-}
-
-// Auto-detect wallet on load
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    if(window.solana?.isConnected) {
-      connectWalletGame();
-    }
-  }, 1000);
-});
-
-// ════════════════════════════════════════════════════════
-//  METAMASK + BSC INTEGRATION v2 (MetaMask específico)
-// ════════════════════════════════════════════════════════
-const BSC_TESTNET={chainId:'0x61',chainName:'BSC Testnet',nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},rpcUrls:['https://data-seed-prebsc-1-s1.binance.org:8545/'],blockExplorerUrls:['https://testnet.bscscan.com/']};
-const USE_TESTNET=true;
-const CONTRACT_ADDR='0x0000000000000000000000000000000000000000';
-let _web3,_contract,_userAccount,_walletOk=false;
-const CONTRACT_ABI=[{"inputs":[],"name":"registerPlayer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"damage","type":"uint256"},{"name":"powered","type":"bool"}],"name":"attackBoss","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"count","type":"uint8"}],"name":"openBossChest","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"name":"itemType","type":"uint8"}],"name":"shopBuy","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"ascend","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimDailyChest","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"world","type":"uint32"},{"name":"stage","type":"uint8"},{"name":"kills","type":"uint64"},{"name":"goldLv","type":"uint8"}],"name":"syncAdventure","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"a","type":"address"}],"name":"getPlayerBoss","outputs":[{"components":[{"name":"sessionId","type":"uint256"},{"name":"damage","type":"uint256"},{"name":"pendingReward","type":"uint256"},{"name":"wins","type":"uint32"},{"name":"bossLvReached","type":"uint8"},{"name":"registered","type":"bool"}],"type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"name":"a","type":"address"}],"name":"getPlayerGacha","outputs":[{"components":[{"name":"gems","type":"uint32"},{"name":"chestsOpened","type":"uint32"},{"name":"pityEpic","type":"uint16"},{"name":"pityLeg","type":"uint16"},{"name":"pityMyth","type":"uint16"},{"name":"soulFragments","type":"uint32"},{"name":"talentPts","type":"uint8"},{"name":"ascensions","type":"uint8"},{"name":"lastDailyChest","type":"uint256"},{"name":"registeredAt","type":"uint256"}],"type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getSessionInfo","outputs":[{"name":"_id","type":"uint256"},{"name":"_timeLeft","type":"uint256"},{"name":"_poolBoss","type":"uint256"},{"name":"_poolAdv","type":"uint256"},{"name":"_totalDmg","type":"uint256"}],"stateMutability":"view","type":"function"}];
-
-function _getMetaMaskProvider(){
-  const eth=window.ethereum;if(!eth)return null;
-  if(eth.providers&&eth.providers.length){
-    return eth.providers.find(p=>p.isMetaMask&&!p.isTrust&&!p.isTrustWallet&&!p.isCoinbaseWallet&&!p.isTokenPocket)||null;
-  }
-  if(eth.isMetaMask&&!eth.isTrust&&!eth.isTrustWallet&&!eth.isCoinbaseWallet)return eth;
+  if(e.isMetaMask&&!e.isTrust&&!e.isTrustWallet&&!e.isCoinbaseWallet)return e;
   return null;
 }
 
-async function refreshBalance(){
-  if(!_userAccount)return;
+async function connectMM(){
+  if(_ok){disconnectMM();return;}
+  var btn=document.getElementById('connectWalletBtn');
+  if(btn)btn.textContent='Conectando...';
+  var mm=_getMM();
+  if(!mm){
+    var msg=window.ethereum
+      ?'Otra wallet detectada (TrustWallet?). SOLBOSS necesita MetaMask. 1. Instala MetaMask: metamask.io 2. Desactiva TrustWallet en chrome://extensions 3. Recarga la pagina'
+      :'MetaMask no detectado. Instala en metamask.io y recarga la pagina.';
+    alert(msg);
+    window.open('https://metamask.io','_blank');
+    if(btn)btn.textContent='Conectar MetaMask';
+    return;
+  }
   try{
-    let bnb=0;
-    if(_web3){const wei=await _web3.eth.getBalance(_userAccount);bnb=parseFloat(_web3.utils.fromWei(wei,'ether'));}
-    else{const mm=_getMetaMaskProvider();if(mm){const r=await mm.request({method:'eth_getBalance',params:[_userAccount,'latest']});bnb=parseInt(r,16)/1e18;}}
-    G.wallet=bnb;
-    if($i('walletHdr'))$i('walletHdr').textContent=bnb.toFixed(4);
-    if($i('walletBalanceLive'))$i('walletBalanceLive').textContent=bnb.toFixed(4);
-    if(_contract){try{const info=await _contract.methods.getSessionInfo().call();G.pool=parseFloat(_web3.utils.fromWei(info._poolBoss,'ether'));G.treasury=parseFloat(_web3.utils.fromWei(info._poolAdv,'ether'));fastStats();}catch(e){}}
-    return bnb;
-  }catch(e){console.warn('balance:',e.message);}
+    var accs=await mm.request({method:'eth_requestAccounts'});
+    _acc=accs[0];
+    try{await mm.request({method:'wallet_switchEthereumChain',params:[{chainId:_TEST?'0x61':'0x38'}]});}
+    catch(sw){
+      if(sw.code===4902){
+        await mm.request({method:'wallet_addEthereumChain',params:[_TEST?_BSC:{
+          chainId:'0x38',chainName:'BNB Smart Chain',
+          nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},
+          rpcUrls:['https://bsc-dataseed.binance.org/'],
+          blockExplorerUrls:['https://bscscan.com/']
+        }]});
+      }
+    }
+    if(typeof Web3!=='undefined'){
+      _w3=new Web3(mm);
+      if(_CADDR!=='0x0000000000000000000000000000000000000000'){
+        _ct=new _w3.eth.Contract(_ABI,_CADDR);
+      }
+    }
+    _ok=true;
+    var short=_acc.slice(0,6)+'...'+_acc.slice(-4);
+    var d1=document.getElementById('mmOff');if(d1)d1.style.display='none';
+    var d2=document.getElementById('mmOn');if(d2)d2.style.display='block';
+    var da=document.getElementById('mmAddr');if(da)da.textContent=_acc;
+    var dn=document.getElementById('mmNet');if(dn)dn.textContent=_TEST?'BSC Testnet':'BNB Mainnet';
+    await refreshMM();
+    if(_ct){
+      try{
+        var p=await _ct.methods.getPlayerBoss(_acc).call();
+        if(!p.registered){
+          if(typeof addEv==='function')addEv('<span class="et">Registrando en BSC...</span>');
+          await _ct.methods.registerPlayer().send({from:_acc});
+          if(typeof addEv==='function')addEv('<span class="et">Registrado!</span>');
+        }
+      }catch(ex){console.warn(ex);}
+    }
+    if(typeof addEv==='function')addEv('<span class="et">MetaMask: '+short+'</span>');
+    mm.on('accountsChanged',function(a){
+      if(!a.length)disconnectMM();
+      else{_acc=a[0];var da2=document.getElementById('mmAddr');if(da2)da2.textContent=a[0];refreshMM();}
+    });
+    mm.on('chainChanged',function(){location.reload();});
+  }catch(e){
+    if(btn)btn.textContent='Conectar MetaMask';
+    if(e.code===4001){if(typeof addEv==='function')addEv('<span class="eg">Conexion rechazada</span>');}
+    else{if(typeof addEv==='function')addEv('<span class="eg">Error: '+(e.message||'').slice(0,60)+'</span>');}
+  }
 }
-function disconnectWallet(){
-  _walletOk=false;_userAccount=null;_web3=null;_contract=null;
-  if($i('walletDisconnected'))$i('walletDisconnected').style.display='block';
-  if($i('walletConnected'))$i('walletConnected').style.display='none';
-  if($i('walletHdr'))$i('walletHdr').textContent='0.0000';
-  G.wallet=0;addEv('<span class="eg">🔌 MetaMask desconectado</span>');
-}
-async function _initPlayerOnChain(){
-  if(!_contract||!_userAccount)return;
+
+async function refreshMM(){
+  if(!_acc)return;
   try{
-    const p=await _contract.methods.getPlayerBoss(_userAccount).call();
-    if(!p.registered){addEv('<span class="et">📝 Registrando...</span>');await _contract.methods.registerPlayer().send({from:_userAccount});addEv('<span class="et">✅ ¡Registrado en BNB Chain!</span>');}
-    const g=await _contract.methods.getPlayerGacha(_userAccount).call();
-    G.gems=parseInt(g.gems);G.pityEpic=parseInt(g.pityEpic);G.pityLeg=parseInt(g.pityLeg);G.pityMyth=parseInt(g.pityMyth)||0;
-    updateGemUI();updatePityUI();addEv('<span class="et">📊 Estado desde BNB Chain</span>');
-  }catch(e){console.warn('initPlayer:',e.message);}
+    var bnb=0;
+    if(_w3){
+      var w=await _w3.eth.getBalance(_acc);
+      bnb=parseFloat(_w3.utils.fromWei(w,'ether'));
+    }else{
+      var mm2=_getMM();
+      if(mm2){var r=await mm2.request({method:'eth_getBalance',params:[_acc,'latest']});bnb=parseInt(r,16)/1e18;}
+    }
+    if(typeof G!=='undefined')G.wallet=bnb;
+    var wh=document.getElementById('walletHdr');if(wh)wh.textContent=bnb.toFixed(4);
+    var mb=document.getElementById('mmBal');if(mb)mb.textContent=bnb.toFixed(4);
+  }catch(e){console.warn(e);}
 }
-window.addEventListener('load',async()=>{const mm=_getMetaMaskProvider();if(mm&&mm.selectedAddress)await connectWalletGame();});
-setInterval(()=>{if(_walletOk)refreshBalance();},30000);
+
+function disconnectMM(){
+  _ok=false;_acc=null;_w3=null;_ct=null;
+  var d1=document.getElementById('mmOff');if(d1)d1.style.display='block';
+  var d2=document.getElementById('mmOn');if(d2)d2.style.display='none';
+  var wh=document.getElementById('walletHdr');if(wh)wh.textContent='0.0000';
+  if(typeof G!=='undefined')G.wallet=0;
+  if(typeof addEv==='function')addEv('<span class="eg">MetaMask desconectado</span>');
+}
+
+var _ABI=[
+  {"inputs":[],"name":"registerPlayer","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"damage","type":"uint256"},{"name":"powered","type":"bool"}],"name":"attackBoss","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[],"name":"claimReward","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"count","type":"uint8"}],"name":"openBossChest","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"name":"a","type":"address"}],"name":"getPlayerBoss","outputs":[{"components":[{"name":"sessionId","type":"uint256"},{"name":"damage","type":"uint256"},{"name":"pendingReward","type":"uint256"},{"name":"wins","type":"uint32"},{"name":"bossLvReached","type":"uint8"},{"name":"registered","type":"bool"}],"type":"tuple"}],"stateMutability":"view","type":"function"}
+];
+
+window.addEventListener('load',function(){
+  var mm=_getMM();
+  if(mm&&mm.selectedAddress)connectMM();
+});
+setInterval(function(){if(_ok)refreshMM();},30000);
 </script>
 </body>
 </html>
