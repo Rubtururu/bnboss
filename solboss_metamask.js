@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ── Configuración ─────────────────────────────────────────────────────────
-const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000"; // ← Poner tu dirección aquí tras deploy
+const CONTRACT_ADDRESS = "0x98aE441e76f0EA1e9bFD3ae7BF4c017d6273c6D5"; // ← Poner tu dirección aquí tras deploy
 const BSC_TESTNET_CHAIN_ID  = "0x61";   // 97  - para pruebas GRATIS
 const BSC_MAINNET_CHAIN_ID  = "0x38";   // 56  - red real con BNB
 const USE_TESTNET = true; // ← cambiar a false para mainnet con BNB real
