@@ -835,7 +835,7 @@ h1,h2,h3 { font-family: 'Cinzel', serif; }
           <div id="mmOff">
             <div style="text-align:center;padding:6px 0 10px">
               <div style="font-size:44px;margin-bottom:5px">🦊</div>
-              <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.65"><b style="color:var(--gold)">Login requerido.</b><br>Conecta MetaMask para jugar.</div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.65"><b style="color:var(--gold)">Login requerido.</b><br>Tu progreso se guarda en blockchain.</div>
             </div>
             <button onclick="mmConnect()" id="mmBtn" style="width:100%;background:linear-gradient(135deg,#b07000,#f0a800);border:none;border-radius:11px;color:#111;font-family:'Cinzel',serif;font-size:14px;font-weight:900;padding:13px;cursor:pointer;letter-spacing:1px">🦊 CONECTAR METAMASK</button>
             <div id="mmStatus" style="margin-top:8px;font-size:10px;color:var(--text3);text-align:center;min-height:14px"></div>
@@ -857,7 +857,7 @@ h1,h2,h3 { font-family: 'Cinzel', serif; }
           </div>
           <div style="margin-top:10px;font-size:10px;color:var(--text3);line-height:1.9">
             <div style="padding:6px 10px;background:rgba(8,8,28,.65);border-radius:8px;border-left:2px solid var(--gold);margin-bottom:5px"><b style="color:var(--gold)">Economia:</b> 80% boss · 15% aventura · 5% dev</div>
-            <div style="padding:6px 10px;background:rgba(8,8,28,.65);border-radius:8px;border-left:2px solid var(--teal);margin-bottom:5px"><b style="color:var(--teal)">Pagos:</b> Al completar 10 bosses o reset 24h</div>
+            <div style="padding:6px 10px;background:rgba(8,8,28,.65);border-radius:8px;border-left:2px solid var(--teal);margin-bottom:5px"><b style="color:var(--teal)">Progreso:</b> On-chain · Cualquier dispositivo</div>
             <div style="padding:6px 10px;background:rgba(8,8,28,.65);border-radius:8px;border-left:2px solid var(--purple3)"><b style="color:var(--purple3)">Contrato:</b> <span style="font-family:monospace;font-size:8px">0x98aE...c6D5</span></div>
           </div>
         </div>
@@ -2557,7 +2557,7 @@ setInterval(()=>{G.players+=rng(-2,5);G.players=Math.max(150,G.players);if($i('p
 A.active=true;A.isBossWave=false;advSpawnNew();A.raf=requestAnimationFrame(advTick);
 // ── BLOCKCHAIN INTEGRATION ─────────────────────────────────────────────────
 // Carga solboss_wallet.js si está disponible, si no usa modo offline
-async function connectWalletGame(){if(typeof mmConnect!=="undefined")await mmConnect();}
+function connectWalletGame(){if(typeof mmConnect!=="undefined")mmConnect();}
 
 // Auto-detect wallet on load
 window.addEventListener('load', () => {
@@ -2622,463 +2622,6 @@ setInterval(()=>{if(_walletOk)refreshBalance();},30000);
 <div id="loginGate" style="position:fixed;inset:0;z-index:9999;background:rgba(2,2,10,.97);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
   <div style="text-align:center;max-width:400px;width:92%;padding:36px 28px;background:rgba(5,5,20,.98);border:2px solid rgba(240,168,0,.4);border-radius:18px;box-shadow:0 0 80px rgba(240,168,0,.15)">
     <div style="font-family:'Cinzel Decorative',serif;font-size:32px;font-weight:900;background:linear-gradient(135deg,#ffd060,#f0a030,#ff5050);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">SOLBOSS</div>
-    <div style="font-size:10px;color:rgba(200,180,255,.5);letter-spacing:4px;margin-bottom:32px">BLOCKCHAIN BOSS BATTLE · BNB CHAIN</div>
-    <div style="font-size:52px;margin-bottom:18px">🦊</div>
-    <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:#f0a030;margin-bottom:8px">Conecta MetaMask para jugar</div>
-    <div style="font-size:12px;color:#8880b8;margin-bottom:24px;line-height:1.7">Pagos reales en BNB · Recompensas on-chain<br>Progreso guardado automáticamente</div>
-    <button onclick="mmConnect()" id="loginBtn" style="width:100%;background:linear-gradient(135deg,#b07000,#f0a800);border:none;border-radius:12px;color:#111;font-family:'Cinzel',serif;font-size:16px;font-weight:900;padding:15px;cursor:pointer;letter-spacing:1px;box-shadow:0 4px 24px rgba(240,168,0,.4);transition:.15s">🦊 CONECTAR METAMASK</button>
-    <div id="loginMsg" style="margin-top:14px;font-size:11px;color:#8880b8;min-height:16px"></div>
-    <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10px;color:#44406a">
-      <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;text-align:left"><b style="color:#f0a030">Red:</b><br>BSC Testnet (97)</div>
-      <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;text-align:left"><b style="color:#00d4aa">BNB gratis:</b><br>testnet.binance.org</div>
-      <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;text-align:left;grid-column:span 2"><b style="color:#cc88ff">Contrato:</b> <span style="font-family:monospace">0x98aE441e76f0EA1e9bFD3ae7BF4c017d6273c6D5</span></div>
-    </div>
-  </div>
-</div>
-<script>
-// ═══════════════════════════════════════════════════
-//  SOLBOSS Blockchain v3 — ethers.js v5
-//  Architecture:
-//   ON-CHAIN:  payments, pools, pity, rewards
-//   LOCAL:     adventure progress (localStorage)
-//   SYNC:      read on login, save on milestones only
-// ═══════════════════════════════════════════════════
-var CT  = '0x8F452348CA0AF83b6eCd28605f816999fca3F159';
-var ABI = [
-  "function registerPlayer() external",
-  "function joinBossSession() external payable",
-  "function attackBoss(uint256 damage, bool powered) external payable",
-  "function completeBossSession() external",
-  "function claimReward() external",
-  "function openBossChest(uint8 count) external payable",
-  "function shopBuy(uint8 t, uint16 qty) external payable",
-  "function saveCheckpoint(uint32 world, uint8 stage, uint32 gold, uint8 lv0, uint8 lv1, uint8 lv2, uint8 lv3) external",
-  "function ascend() external",
-  "function claimDailyChest() external",
-  "function getPlayerBoss(address) external view returns (tuple(bool registered, bool joinedSession, uint256 sessionId, uint256 sessionDamage, uint256 pendingReward, uint32 wins, uint8 bossLvReached))",
-  "function getPlayerGacha(address) external view returns (tuple(uint32 gems, uint32 chestsOpened, uint16 pityEpic, uint16 pityLeg, uint16 pityMyth, uint32 soulFragments, uint8 talentPts, uint8 ascensions, uint256 lastDailyChest, uint256 registeredAt))",
-  "function getPlayerCheckpoint(address) external view returns (tuple(uint32 world, uint8 stage, uint32 gold, uint8 heroLv0, uint8 heroLv1, uint8 heroLv2, uint8 heroLv3, uint256 savedAt))",
-  "function getSessionInfo() external view returns (uint256 _sid, uint256 _timeLeft, uint256 _poolBoss, uint256 _poolAdv, uint256 _totalDmg, uint256 _players)",
-  "event ChestOpened(address indexed p, uint8 count, uint8[] rarities)",
-  "event ShopBought(address indexed p, uint8 t, uint16 qty)",
-  "event SessionJoined(address indexed p, uint256 sid)"
-];
-
-var _prov=null, _sign=null, _ct=null, _addr=null, _ok=false;
-var _LS_KEY = 'solboss_save_';  // localStorage prefix per wallet
-
-// ── Utils ────────────────────────────────────────────────────────────────────
-function _el(id){ return document.getElementById(id); }
-function _msg(t){ var a=_el('loginMsg'); var b=_el('mmStatus'); if(a)a.textContent=t; if(b)b.textContent=t; }
-function _bn(v){ if(v&&v.toNumber)return v.toNumber(); try{return parseInt(String(v));}catch(e){return 0;} }
-function _fmt(v){ return parseFloat(ethers.utils.formatEther(String(v))); }
-
-// localStorage save/load (free, instant, no gas)
-function _lsSave(){
-  if(!_addr||typeof G==='undefined')return;
-  var key=_LS_KEY+_addr.toLowerCase();
-  var data={
-    gold:G.gold||0, goldLv:G.goldLv||1, gems:G.gems||0,
-    pityEpic:G.pityEpic||0, pityLeg:G.pityLeg||0, pityMyth:G.pityMyth||0,
-    wins:G.wins||0, pendingReward:G.pendingReward||0,
-    wallet:G.wallet||0, bossJoined:G.bossJoined||false,
-    heroes: typeof A!=='undefined'?A.heroes.map(function(h){return{lv:h.lv,xp:h.xp,hp:h.hp,gear:h.gear,inventory:h.inventory||[]};}):[],
-    world:  typeof A!=='undefined'?A.world:1,
-    stage:  typeof A!=='undefined'?A.stage:1,
-    kills:  typeof A!=='undefined'?A.kills:0,
-    ts: Date.now()
-  };
-  try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){}
-}
-
-function _lsLoad(){
-  if(!_addr||typeof G==='undefined')return null;
-  var key=_LS_KEY+_addr.toLowerCase();
-  try{
-    var raw=localStorage.getItem(key);
-    return raw?JSON.parse(raw):null;
-  }catch(e){return null;}
-}
-
-// ── MetaMask detection ────────────────────────────────────────────────────────
-function _findMM(){
-  var e=window.ethereum; if(!e)return null;
-  if(e.providers&&e.providers.length){
-    for(var i=0;i<e.providers.length;i++){
-      var p=e.providers[i];
-      if(p.isMetaMask&&!p.isTrust&&!p.isTrustWallet&&!p.isCoinbaseWallet)return p;
-    } return null;
-  }
-  if(e.isMetaMask&&!e.isTrust&&!e.isTrustWallet&&!e.isCoinbaseWallet)return e;
-  return null;
-}
-
-// ── Connect ───────────────────────────────────────────────────────────────────
-async function mmConnect(){
-  if(_ok){ mmDisconnect(); return; }
-  var lb=_el('loginBtn'), mb=_el('mmBtn');
-  function btn(t){ if(lb)lb.textContent=t; if(mb)mb.textContent=t; }
-  btn('Conectando...'); _msg('Buscando MetaMask...');
-  if(typeof ethers==='undefined'){
-    _msg('Error: recarga la pagina (F5)');
-    btn('🦊 CONECTAR METAMASK'); return;
-  }
-  var mm=_findMM();
-  if(!mm){
-    _msg('MetaMask no encontrado');
-    alert(window.ethereum
-      ?'Otra wallet detectada. SOLBOSS requiere MetaMask.\nDesactiva otras wallets en chrome://extensions y recarga.'
-      :'MetaMask no detectado.\nInstala en metamask.io y recarga la pagina.');
-    window.open('https://metamask.io','_blank');
-    btn('🦊 CONECTAR METAMASK'); return;
-  }
-  try{
-    _msg('Aprueba en MetaMask...');
-    await mm.request({method:'eth_requestAccounts'});
-    _msg('Cambiando red...');
-    try{ await mm.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x61'}]}); }
-    catch(sw){
-      if(sw.code===4902) await mm.request({method:'wallet_addEthereumChain',params:[{
-        chainId:'0x61', chainName:'BSC Testnet',
-        nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},
-        rpcUrls:['https://data-seed-prebsc-1-s1.binance.org:8545/'],
-        blockExplorerUrls:['https://testnet.bscscan.com/']
-      }]});
-      else if(sw.code!==4001) throw sw;
-    }
-    _prov = new ethers.providers.Web3Provider(mm);
-    _sign = _prov.getSigner();
-    _addr = await _sign.getAddress();
-    _ct   = new ethers.Contract(CT, ABI, _sign);
-    _ok   = true;
-    var sh = _addr.slice(0,6)+'...'+_addr.slice(-4);
-
-    // Hide gate, show connected
-    var gate=_el('loginGate'); if(gate)gate.style.display='none';
-    if(_el('mmOff'))_el('mmOff').style.display='none';
-    if(_el('mmOn'))_el('mmOn').style.display='block';
-    if(_el('mmAddr'))_el('mmAddr').textContent=_addr;
-
-    await mmRefresh();
-    _msg('Cargando datos...');
-    await _initPlayer();
-
-    // Hook purchases (no auto-sync, only on explicit actions)
-    _hookAll();
-
-    addEv('<span class="et">🦊 '+sh+' (BSC Testnet)</span>');
-    _msg('');
-
-    mm.on('accountsChanged',function(a){ if(!a.length)mmDisconnect(); else{ _addr=a[0]; mmRefresh(); }});
-    mm.on('chainChanged',function(){ location.reload(); });
-
-  }catch(e){
-    btn('🦊 CONECTAR METAMASK');
-    if(e.code===4001||e.code==='ACTION_REJECTED') _msg('Conexion rechazada');
-    else{ _msg('Error: '+(e.message||'').slice(0,60)); console.error('mmConnect:',e); }
-  }
-}
-
-async function mmRefresh(){
-  if(!_prov||!_addr)return 0;
-  try{
-    var w=await _prov.getBalance(_addr);
-    var b=parseFloat(ethers.utils.formatEther(w));
-    if(typeof G!=='undefined')G.wallet=b;
-    if(_el('walletHdr'))_el('walletHdr').textContent=b.toFixed(4);
-    if(_el('mmBal'))_el('mmBal').textContent=b.toFixed(4);
-    return b;
-  }catch(e){ return 0; }
-}
-
-function mmDisconnect(){
-  _lsSave(); // save before disconnect
-  _ok=false; _prov=null; _sign=null; _ct=null; _addr=null;
-  var gate=_el('loginGate'); if(gate)gate.style.display='flex';
-  if(_el('mmOff'))_el('mmOff').style.display='block';
-  if(_el('mmOn'))_el('mmOn').style.display='none';
-  if(_el('walletHdr'))_el('walletHdr').textContent='0.0000';
-  if(typeof G!=='undefined')G.wallet=0;
-  addEv('<span class="eg">MetaMask desconectado</span>');
-}
-
-// ── Init player: read chain + localStorage ───────────────────────────────────
-async function _initPlayer(){
-  if(!_ct||!_addr)return;
-  try{
-    var pb = await _ct.getPlayerBoss(_addr);
-
-    // Register if new
-    if(!pb.registered){
-      addEv('Registrando cuenta en BSC...');
-      var t=await _ct.registerPlayer({gasLimit:300000}); await t.wait();
-      addEv('<span class="et">Cuenta registrada!</span>');
-      pb = await _ct.getPlayerBoss(_addr);
-    }
-
-    // Load on-chain data (authoritative)
-    var g  = await _ct.getPlayerGacha(_addr);
-    var cp = await _ct.getPlayerCheckpoint(_addr);
-    var info = await _ct.getSessionInfo();
-
-    // Apply to game state
-    if(typeof G!=='undefined'){
-      G.wins          = _bn(pb.wins);
-      G.bossJoined    = pb.joinedSession;
-      G.pityEpic      = _bn(g.pityEpic);
-      G.pityLeg       = _bn(g.pityLeg);
-      G.pityMyth      = _bn(g.pityMyth);
-      G.gems          = _bn(g.gems);
-      G.pool          = _fmt(info._poolBoss);
-      G.treasury      = _fmt(info._poolAdv);
-      G.timeLeft      = _bn(info._timeLeft);
-      var pend        = _bn(pb.pendingReward);
-      if(pend>0){ G.pendingReward=_fmt(pb.pendingReward); if(typeof updateRewardBanner==='function')updateRewardBanner(); }
-    }
-
-    // Adventure: localStorage is primary for progress, chain is secondary (checkpoint)
-    var ls = _lsLoad();
-    if(ls && typeof A!=='undefined'){
-      // Use localStorage if it's newer than chain checkpoint
-      var cpTime = _bn(cp.savedAt);
-      var lsTime = Math.floor((ls.ts||0)/1000);
-      if(lsTime > cpTime){
-        // localStorage is more recent - use it
-        A.world = ls.world||1; A.stage = ls.stage||1; A.kills = ls.kills||0;
-        if(typeof G!=='undefined'){ G.gold=ls.gold||0; G.goldLv=ls.goldLv||1; }
-        if(ls.heroes && A.heroes){
-          ls.heroes.forEach(function(h,i){
-            if(A.heroes[i]){
-              A.heroes[i].lv=h.lv||1; A.heroes[i].xp=h.xp||0;
-              if(h.gear)A.heroes[i].gear=h.gear;
-              if(h.inventory)A.heroes[i].inventory=h.inventory;
-            }
-          });
-        }
-        addEv('<span class="et">Progreso local cargado</span>');
-      } else {
-        // Chain checkpoint is more recent - use it
-        if(typeof A!=='undefined'){ A.world=_bn(cp.world)||1; A.stage=_bn(cp.stage)||1; }
-        if(typeof G!=='undefined'){ G.gold=_bn(cp.gold)||0; }
-        addEv('<span class="et">Checkpoint blockchain cargado</span>');
-      }
-    } else if(typeof A!=='undefined'){
-      A.world = _bn(cp.world)||1; A.stage = _bn(cp.stage)||1;
-    }
-
-    // Update pools display
-    _updatePoolsUI(info);
-
-    if(typeof updateGemUI==='function')updateGemUI();
-    if(typeof updatePityUI==='function')updatePityUI();
-    if(typeof fastStats==='function')fastStats();
-
-    addEv('<span class="et">Estado cargado desde BSC</span>');
-  }catch(e){
-    addEv('<span class="eg">Error cargando: '+(e.message||'').slice(0,60)+'</span>');
-    console.error('_initPlayer:',e);
-  }
-}
-
-function _updatePoolsUI(info){
-  if(!info)return;
-  var bp=_fmt(info._poolBoss); var ap=_fmt(info._poolAdv);
-  var m={pPool:bp.toFixed(4),pTreasury:ap.toFixed(4),tPool:ap.toFixed(4),
-         advPoolBig:ap.toFixed(4),advPayoutBig:(ap*0.03).toFixed(4)};
-  Object.entries(m).forEach(function(kv){ var el=_el(kv[0]); if(el)el.textContent=kv[1]; });
-  if(typeof fastStats==='function')fastStats();
-}
-
-// ── Generic TX helper ─────────────────────────────────────────────────────────
-async function _tx(fn, desc){
-  try{
-    addEv('<span style="color:#f0a030;font-size:10px">MetaMask: '+(desc||'confirmando...')+'</span>');
-    var tx = await fn();
-    addEv('<span style="color:#666;font-size:10px">Confirmando TX...</span>');
-    var r  = await tx.wait();
-    addEv('<span class="et">✓ '+(desc||'OK')+': '+tx.hash.slice(0,12)+'...</span>');
-    await mmRefresh();
-    return r;
-  }catch(e){
-    if(e.code===4001||e.code==='ACTION_REJECTED')
-      addEv('<span class="eg">Cancelado por el usuario</span>');
-    else
-      addEv('<span class="eg">Error: '+(e.message||e.reason||'').slice(0,80)+'</span>');
-    return null;
-  }
-}
-
-// ── Hook all game purchase functions ─────────────────────────────────────────
-function _hookAll(){
-
-  // openChest: 1 TX para N cofres boss
-  var _oOC = openChest;
-  openChest = async function(count, mode){
-    if(mode !== 'sol') return _oOC(count, mode); // gem chests: local only, free
-
-    var bnb   = (0.001 * count).toFixed(6);
-    var cost  = ethers.utils.parseEther(bnb);
-    addEv('<span class="et">Abriendo '+count+' cofre(s) boss ('+bnb+' BNB)...</span>');
-    var r = await _tx(
-      function(){ return _ct.openBossChest(count, {value:cost, gasLimit:450000}); },
-      count+' cofres'
-    );
-    if(!r) return;
-
-    // Read rarities from ChestOpened event
-    var evt = r.events && r.events.find(function(e){ return e.event==='ChestOpened'; });
-    if(evt && evt.args && evt.args.rarities){
-      var rarNames = ['Comun','Poco Comun','Raro','Epico','Legendario','Mitico'];
-      var names = evt.args.rarities.map(function(v){ return rarNames[_bn(v)]||'?'; });
-      addEv('<span class="et">On-chain: '+names.join(', ')+'</span>');
-    }
-    _oOC(count, mode); // local animation with local random (visual only)
-    _lsSave();
-
-    // Refresh pool
-    var info = await _ct.getSessionInfo();
-    _updatePoolsUI(info);
-  };
-
-  // buyShop: 1 TX para N unidades del mismo tipo
-  var _oBS = buyShop;
-  buyShop = async function(type){
-    var unitCosts = {gold:'0.001', gems:'0.01', items:'0.005'};
-    var typeIdx   = {gold:0, gems:1, items:2};
-    // Always buy 1 unit per click (gold=500, gems=150, items=10)
-    var qty  = 1;
-    var cost = ethers.utils.parseEther(unitCosts[type]);
-    addEv('<span class="et">Tienda: '+unitCosts[type]+' BNB → 1 TX...</span>');
-    var r = await _tx(
-      function(){ return _ct.shopBuy(typeIdx[type], qty, {value:cost, gasLimit:200000}); },
-      'tienda '+type
-    );
-    if(!r) return;
-    _oBS(type); // apply local effects (add gold/gems/items)
-    _lsSave();
-
-    var info = await _ct.getSessionInfo();
-    _updatePoolsUI(info);
-  };
-
-  // startAuto / joinBoss: 1 TX para unirse a sesión boss
-  var _oSA = typeof startAuto !== 'undefined' ? startAuto : null;
-  if(_oSA){
-    startAuto = async function(){
-      if(G.bossJoined){
-        // Already joined, just start locally
-        _oSA(); return;
-      }
-      addEv('<span class="et">Uniendose a la sesion boss (0.001 BNB)...</span>');
-      var cost = ethers.utils.parseEther('0.001');
-      var r = await _tx(
-        function(){ return _ct.joinBossSession({value:cost, gasLimit:200000}); },
-        'unirse al boss'
-      );
-      if(!r) return;
-      G.bossJoined = true;
-      addEv('<span class="et">Unido! El auto-ataque comienza.</span>');
-      _oSA();
-    };
-  }
-
-  // doAtk: ataque potenciado = 1 TX (básico = gratis, local)
-  var _oDA = doAtk;
-  doAtk = async function(){
-    if(typeof G==='undefined'||G.atkType!==1) return _oDA(); // basic: free, local
-    // Powered: needs TX
-    var dmg  = Math.floor(Math.random()*1000+500).toString();
-    var cost = ethers.utils.parseEther('0.001');
-    var r = await _tx(
-      function(){ return _ct.attackBoss(dmg, true, {value:cost, gasLimit:200000}); },
-      'ataque potenciado'
-    );
-    if(r) _oDA(); // apply local damage animation
-  };
-
-  // claimReward: 1 TX
-  var _oCR = claimReward;
-  claimReward = async function(){
-    addEv('<span class="et">Reclamando recompensa en BSC...</span>');
-    var r = await _tx(
-      function(){ return _ct.claimReward({gasLimit:150000}); },
-      'reclamar recompensa'
-    );
-    if(r){
-      addEv('<span class="et">Recompensa enviada a tu wallet!</span>');
-      _oCR();
-      _lsSave();
-    }
-  };
-
-  // openDailyChest: 1 TX
-  var _oDC = openDailyChest;
-  openDailyChest = async function(){
-    var r = await _tx(
-      function(){ return _ct.claimDailyChest({gasLimit:150000}); },
-      'cofre diario'
-    );
-    if(r) _oDC();
-    else  addEv('<span class="eg">Cofre diario ya reclamado — espera 24h</span>');
-  };
-
-  // doAscend: 1 TX (milestone event)
-  var _oAsc = typeof doAscend !== 'undefined' ? doAscend : null;
-  if(_oAsc){
-    doAscend = async function(){
-      var world = typeof A!=='undefined'?A.world:1;
-      var stage = typeof A!=='undefined'?A.stage:1;
-      var gold  = typeof G!=='undefined'?G.gold||0:0;
-      var lvs   = typeof A!=='undefined'?A.heroes.map(function(h){return h.lv||1;}):[1,0,0,0];
-      var r = await _tx(
-        function(){ return _ct.ascend({gasLimit:200000}); },
-        'ascension'
-      );
-      if(r){
-        _oAsc();
-        // Also save checkpoint
-        try{
-          var t = await _ct.saveCheckpoint(world,stage,gold,lvs[0]||1,lvs[1]||0,lvs[2]||0,lvs[3]||0,{gasLimit:200000});
-          await t.wait();
-        }catch(e){ console.warn('checkpoint after ascend:',e.message); }
-        _lsSave();
-      }
-    };
-  }
-
-  // Auto-save to localStorage (FREE, no gas) every 60s and on page hide
-  setInterval(function(){ if(_ok) _lsSave(); }, 60000);
-  document.addEventListener('visibilitychange', function(){
-    if(document.hidden && _ok) _lsSave();
-  });
-  window.addEventListener('beforeunload', function(){
-    if(_ok) _lsSave();
-  });
-
-  addEv('<span style="font-size:10px;color:#00cc66">Blockchain OK · Progreso en localStorage</span>');
-}
-
-// Auto-reconnect on load
-window.addEventListener('load', function(){
-  setTimeout(function(){ var mm=_findMM(); if(mm&&mm.selectedAddress)mmConnect(); }, 500);
-});
-
-// Refresh balance + pools every 30s (READ ONLY, no gas)
-setInterval(async function(){
-  if(!_ok||!_ct)return;
-  try{
-    await mmRefresh();
-    var info = await _ct.getSessionInfo();
-    _updatePoolsUI(info);
-    // Also update timeLeft from chain
-    var tl = _bn(info._timeLeft);
-    if(typeof G!=='undefined'&&tl>0) G.timeLeft=tl;
-  }catch(e){}
-}, 30000);
-</script>
-<div id="loginGate" style="position:fixed;inset:0;z-index:9999;background:rgba(2,2,10,.97);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
-  <div style="text-align:center;max-width:400px;width:92%;padding:36px 28px;background:rgba(5,5,20,.98);border:2px solid rgba(240,168,0,.4);border-radius:18px;box-shadow:0 0 80px rgba(240,168,0,.15)">
-    <div style="font-family:'Cinzel Decorative',serif;font-size:32px;font-weight:900;background:linear-gradient(135deg,#ffd060,#f0a030,#ff5050);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">SOLBOSS</div>
     <div style="font-size:10px;color:rgba(200,180,255,.5);letter-spacing:4px;margin-bottom:32px">BLOCKCHAIN BOSS BATTLE</div>
     <div style="font-size:52px;margin-bottom:18px">🦊</div>
     <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:#f0a030;margin-bottom:8px">Conecta MetaMask para jugar</div>
@@ -3087,9 +2630,332 @@ setInterval(async function(){
     <div id="loginMsg" style="margin-top:14px;font-size:11px;color:#8880b8;min-height:16px"></div>
     <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10px;color:#44406a">
       <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px"><b style="color:#f0a030">Red:</b> BSC Testnet</div>
-      <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px"><b style="color:#00d4aa">BNB gratis:</b> testnet.binance.org</div>
+      <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px"><b style="color:#00d4aa">BNB gratis:</b><br>testnet.binance.org</div>
     </div>
   </div>
 </div>
+<script>
+// SOLBOSS Blockchain - ethers.js v5 - Progreso 100% on-chain
+var CT='0x8F452348CA0AF83b6eCd28605f816999fca3F159';
+var ABI=[{"inputs":[{"internalType":"address","name":"_dev","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"},{"indexed":false,"internalType":"uint32","name":"world","type":"uint32"},{"indexed":false,"internalType":"uint8","name":"stage","type":"uint8"}],"name":"AdvSynced","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"},{"indexed":false,"internalType":"uint8","name":"n","type":"uint8"}],"name":"Ascended","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"},{"indexed":false,"internalType":"uint256","name":"dmg","type":"uint256"},{"indexed":false,"internalType":"bool","name":"powered","type":"bool"}],"name":"BossAttacked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"},{"indexed":false,"internalType":"uint8","name":"count","type":"uint8"},{"indexed":false,"internalType":"uint8[]","name":"rarities","type":"uint8[]"}],"name":"ChestOpened","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"},{"indexed":false,"internalType":"uint8","name":"rarity","type":"uint8"}],"name":"DailyChest","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"}],"name":"HeroesSynced","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"}],"name":"Registered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"sid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"pool","type":"uint256"}],"name":"SessionEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"},{"indexed":false,"internalType":"uint256","name":"sid","type":"uint256"}],"name":"SessionJoined","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"p","type":"address"},{"indexed":false,"internalType":"uint8","name":"t","type":"uint8"},{"indexed":false,"internalType":"uint16","name":"qty","type":"uint16"}],"name":"ShopPurchase","type":"event"},{"inputs":[],"name":"CHEST_COST","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"JOIN_COST","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BOSS_LV","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"POWERED_COST","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SESSION_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SHOP_GEMS_COST","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SHOP_GOLD_COST","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SHOP_ITEMS_COST","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"advScore","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ascend","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"damage","type":"uint256"},{"internalType":"bool","name":"powered","type":"bool"}],"name":"attackBoss","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimDailyChest","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"completeBossSession","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"devWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"distributePool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"getPlayerAdv","outputs":[{"components":[{"internalType":"uint32","name":"world","type":"uint32"},{"internalType":"uint8","name":"stage","type":"uint8"},{"internalType":"uint64","name":"kills","type":"uint64"},{"internalType":"uint32","name":"gold","type":"uint32"},{"internalType":"uint8","name":"goldLv","type":"uint8"}],"internalType":"struct SolBoss.PlayerAdventure","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"getPlayerBoss","outputs":[{"components":[{"internalType":"bool","name":"registered","type":"bool"},{"internalType":"bool","name":"joinedSession","type":"bool"},{"internalType":"uint256","name":"sessionId","type":"uint256"},{"internalType":"uint256","name":"sessionDamage","type":"uint256"},{"internalType":"uint256","name":"pendingReward","type":"uint256"},{"internalType":"uint32","name":"wins","type":"uint32"},{"internalType":"uint8","name":"bossLvReached","type":"uint8"}],"internalType":"struct SolBoss.PlayerBoss","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"getPlayerGacha","outputs":[{"components":[{"internalType":"uint32","name":"gems","type":"uint32"},{"internalType":"uint32","name":"chestsOpened","type":"uint32"},{"internalType":"uint16","name":"pityEpic","type":"uint16"},{"internalType":"uint16","name":"pityLeg","type":"uint16"},{"internalType":"uint16","name":"pityMyth","type":"uint16"},{"internalType":"uint32","name":"soulFragments","type":"uint32"},{"internalType":"uint8","name":"talentPts","type":"uint8"},{"internalType":"uint8","name":"ascensions","type":"uint8"},{"internalType":"uint256","name":"lastDailyChest","type":"uint256"},{"internalType":"uint256","name":"registeredAt","type":"uint256"}],"internalType":"struct SolBoss.PlayerGacha","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"getPlayerHeroes","outputs":[{"components":[{"internalType":"uint8","name":"lv0","type":"uint8"},{"internalType":"uint8","name":"lv1","type":"uint8"},{"internalType":"uint8","name":"lv2","type":"uint8"},{"internalType":"uint8","name":"lv3","type":"uint8"},{"internalType":"uint32","name":"xp0","type":"uint32"},{"internalType":"uint32","name":"xp1","type":"uint32"},{"internalType":"uint32","name":"xp2","type":"uint32"},{"internalType":"uint32","name":"xp3","type":"uint32"}],"internalType":"struct SolBoss.PlayerHeroes","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getSessionInfo","outputs":[{"internalType":"uint256","name":"_sid","type":"uint256"},{"internalType":"uint256","name":"_timeLeft","type":"uint256"},{"internalType":"uint256","name":"_poolBoss","type":"uint256"},{"internalType":"uint256","name":"_poolAdv","type":"uint256"},{"internalType":"uint256","name":"_totalDmg","type":"uint256"},{"internalType":"uint256","name":"_players","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"joinBossSession","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint8","name":"count","type":"uint8"}],"name":"openBossChest","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pAdv","outputs":[{"internalType":"uint32","name":"world","type":"uint32"},{"internalType":"uint8","name":"stage","type":"uint8"},{"internalType":"uint64","name":"kills","type":"uint64"},{"internalType":"uint32","name":"gold","type":"uint32"},{"internalType":"uint8","name":"goldLv","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pBoss","outputs":[{"internalType":"bool","name":"registered","type":"bool"},{"internalType":"bool","name":"joinedSession","type":"bool"},{"internalType":"uint256","name":"sessionId","type":"uint256"},{"internalType":"uint256","name":"sessionDamage","type":"uint256"},{"internalType":"uint256","name":"pendingReward","type":"uint256"},{"internalType":"uint32","name":"wins","type":"uint32"},{"internalType":"uint8","name":"bossLvReached","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pGacha","outputs":[{"internalType":"uint32","name":"gems","type":"uint32"},{"internalType":"uint32","name":"chestsOpened","type":"uint32"},{"internalType":"uint16","name":"pityEpic","type":"uint16"},{"internalType":"uint16","name":"pityLeg","type":"uint16"},{"internalType":"uint16","name":"pityMyth","type":"uint16"},{"internalType":"uint32","name":"soulFragments","type":"uint32"},{"internalType":"uint8","name":"talentPts","type":"uint8"},{"internalType":"uint8","name":"ascensions","type":"uint8"},{"internalType":"uint256","name":"lastDailyChest","type":"uint256"},{"internalType":"uint256","name":"registeredAt","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pHeroes","outputs":[{"internalType":"uint8","name":"lv0","type":"uint8"},{"internalType":"uint8","name":"lv1","type":"uint8"},{"internalType":"uint8","name":"lv2","type":"uint8"},{"internalType":"uint8","name":"lv3","type":"uint8"},{"internalType":"uint32","name":"xp0","type":"uint32"},{"internalType":"uint32","name":"xp1","type":"uint32"},{"internalType":"uint32","name":"xp2","type":"uint32"},{"internalType":"uint32","name":"xp3","type":"uint32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"playerList","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolAdventure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolBoss","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"registerPlayer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"sessionId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"sessionStart","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"sessionTotalDamage","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"d","type":"address"}],"name":"setDevWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"t","type":"uint8"},{"internalType":"uint16","name":"qty","type":"uint16"}],"name":"shopBuy","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint32","name":"world","type":"uint32"},{"internalType":"uint8","name":"stage","type":"uint8"},{"internalType":"uint64","name":"kills","type":"uint64"},{"internalType":"uint32","name":"gold","type":"uint32"},{"internalType":"uint8","name":"goldLv","type":"uint8"}],"name":"syncAdventure","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"lv0","type":"uint8"},{"internalType":"uint8","name":"lv1","type":"uint8"},{"internalType":"uint8","name":"lv2","type":"uint8"},{"internalType":"uint8","name":"lv3","type":"uint8"},{"internalType":"uint32","name":"xp0","type":"uint32"},{"internalType":"uint32","name":"xp1","type":"uint32"},{"internalType":"uint32","name":"xp2","type":"uint32"},{"internalType":"uint32","name":"xp3","type":"uint32"}],"name":"syncHeroes","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"totalPlayers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}];
+var _p=null,_s=null,_c=null,_addr=null,_ok=false;
+
+function _el(id){return document.getElementById(id);}
+function _msg(t){var a=_el('loginMsg'),b=_el('mmStatus');if(a)a.innerHTML=t;if(b)b.innerHTML=t;}
+function _bn(v){if(v&&v.toNumber)return v.toNumber();try{return parseInt(String(v));}catch(e){return 0;}}
+function _fe(v){try{return parseFloat(ethers.utils.formatEther(String(v)));}catch(e){return 0;}}
+
+function _hide(){
+  // Hide login gate, show game
+  var g=_el('loginGate');
+  if(g){g.style.display='none';console.log('loginGate hidden');}
+  else{console.warn('loginGate not found!');}
+  var off=_el('mmOff'),on=_el('mmOn');
+  if(off)off.style.display='none';
+  if(on)on.style.display='block';
+}
+
+function _show(){
+  var g=_el('loginGate');if(g)g.style.display='flex';
+  var off=_el('mmOff'),on=_el('mmOn');
+  if(off)off.style.display='block';if(on)on.style.display='none';
+}
+
+function _findMM(){
+  var e=window.ethereum;if(!e)return null;
+  if(e.providers&&e.providers.length){
+    for(var i=0;i<e.providers.length;i++){
+      var px=e.providers[i];
+      if(px.isMetaMask&&!px.isTrust&&!px.isTrustWallet&&!px.isCoinbaseWallet)return px;
+    }return null;
+  }
+  if(e.isMetaMask&&!e.isTrust&&!e.isTrustWallet&&!e.isCoinbaseWallet)return e;
+  return null;
+}
+
+async function mmConnect(){
+  if(_ok){mmDisconnect();return;}
+  var lb=_el('loginBtn'),mb=_el('mmBtn');
+  function btn(t){if(lb)lb.textContent=t;if(mb)mb.textContent=t;}
+  btn('Conectando...');_msg('Buscando MetaMask...');
+
+  if(typeof ethers==='undefined'){
+    _msg('Error: recarga (F5)');btn('🦊 CONECTAR METAMASK');return;
+  }
+  var mm=_findMM();
+  if(!mm){
+    _msg('MetaMask no encontrado');
+    alert(window.ethereum
+      ?'Otra wallet detectada. Requiere MetaMask. Desactiva otras wallets en chrome://extensions y recarga.'
+      :'MetaMask no detectado. Instala en metamask.io y recarga.');
+    window.open('https://metamask.io','_blank');
+    btn('🦊 CONECTAR METAMASK');return;
+  }
+
+  try{
+    _msg('Conectando...');
+    var accs=await mm.request({method:'eth_requestAccounts'});
+    if(!accs||!accs.length)throw new Error('No accounts');
+
+    _msg('Cambiando a BSC Testnet...');
+    try{
+      await mm.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x61'}]});
+    }catch(sw){
+      if(sw.code===4902){
+        await mm.request({method:'wallet_addEthereumChain',params:[{
+          chainId:'0x61',chainName:'BSC Testnet',
+          nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},
+          rpcUrls:['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+          blockExplorerUrls:['https://testnet.bscscan.com/']
+        }]});
+      } else if(sw.code!==4001) throw sw;
+    }
+
+    // Init ethers
+    _p=new ethers.providers.Web3Provider(mm);
+    _s=_p.getSigner();
+    _addr=await _s.getAddress();
+    _c=new ethers.Contract(CT,ABI,_s);
+    _ok=true;
+
+    // HIDE GATE IMMEDIATELY after connection confirmed
+    _hide();
+    var ad=_el('mmAddr');if(ad)ad.textContent=_addr;
+
+    // Load balance
+    await mmRefresh();
+
+    // Load on-chain state (async, after gate is hidden)
+    _msg('Cargando progreso...');
+    _loadChain().then(function(){
+      _msg('');
+      addEv('<span class="et">🦊 '+_addr.slice(0,6)+'...'+_addr.slice(-4)+' (BSC Testnet)</span>');
+      _hookAll();
+    }).catch(function(e){
+      _msg('');
+      console.warn('loadChain error:',e);
+      addEv('<span class="et">🦊 Conectado (modo basico)</span>');
+      _hookAll();
+    });
+
+    mm.on('accountsChanged',function(a){if(!a.length)mmDisconnect();else{_addr=a[0];mmRefresh();}});
+    mm.on('chainChanged',function(){location.reload();});
+
+  }catch(e){
+    _ok=false;
+    btn('🦊 CONECTAR METAMASK');
+    if(e.code===4001||e.code==='ACTION_REJECTED') _msg('Conexion rechazada');
+    else{_msg('Error: '+(e.message||'').slice(0,60));console.error('mmConnect error:',e);}
+  }
+}
+
+async function _loadChain(){
+  if(!_c||!_addr)return;
+  var pb=await _c.getPlayerBoss(_addr);
+  if(!pb.registered){
+    addEv('Registrando cuenta en BSC...');
+    var t=await _c.registerPlayer({gasLimit:300000});await t.wait();
+    addEv('<span class="et">Cuenta registrada!</span>');
+    pb=await _c.getPlayerBoss(_addr);
+  }else{
+    addEv('<span class="et">Bienvenido de vuelta!</span>');
+  }
+  if(typeof G!=='undefined'){
+    G.wins=_bn(pb.wins);G.bossJoined=pb.joinedSession;
+    var pend=_bn(pb.pendingReward);
+    if(pend>0){G.pendingReward=_fe(pb.pendingReward);if(typeof updateRewardBanner==='function')updateRewardBanner();}
+  }
+  var pa=await _c.getPlayerAdv(_addr);
+  var ph=await _c.getPlayerHeroes(_addr);
+  var pg=await _c.getPlayerGacha(_addr);
+  var inf=await _c.getSessionInfo();
+  if(typeof A!=='undefined'){
+    A.world=_bn(pa.world)||1;A.stage=_bn(pa.stage)||1;A.kills=_bn(pa.kills)||0;
+    var lvs=[_bn(ph.lv0)||1,_bn(ph.lv1)||0,_bn(ph.lv2)||0,_bn(ph.lv3)||0];
+    var xps=[_bn(ph.xp0)||0,_bn(ph.xp1)||0,_bn(ph.xp2)||0,_bn(ph.xp3)||0];
+    if(A.heroes)A.heroes.forEach(function(h,i){h.lv=lvs[i]||h.lv;h.xp=xps[i]||0;});
+  }
+  if(typeof G!=='undefined'){
+    G.gold=_bn(pa.gold)||0;G.goldLv=_bn(pa.goldLv)||1;
+    G.gems=_bn(pg.gems)||0;G.pityEpic=_bn(pg.pityEpic)||0;
+    G.pityLeg=_bn(pg.pityLeg)||0;G.pityMyth=_bn(pg.pityMyth)||0;
+    G.pool=_fe(inf._poolBoss);G.treasury=_fe(inf._poolAdv);
+    G.timeLeft=_bn(inf._timeLeft);
+  }
+  var m={pPool:_fe(inf._poolBoss).toFixed(4),pTreasury:_fe(inf._poolAdv).toFixed(4),
+         advPoolBig:_fe(inf._poolAdv).toFixed(4),advPayoutBig:(_fe(inf._poolAdv)*0.03).toFixed(4)};
+  Object.entries(m).forEach(function(kv){var el=_el(kv[0]);if(el)el.textContent=kv[1];});
+  if(typeof updateGemUI==='function')updateGemUI();
+  if(typeof updatePityUI==='function')updatePityUI();
+  if(typeof fastStats==='function')fastStats();
+  addEv('<span class="et">Progreso cargado - World '+_bn(pa.world)+'-'+_bn(pa.stage)+'</span>');
+}
+
+async function mmRefresh(){
+  if(!_p||!_addr)return 0;
+  try{
+    var b=parseFloat(ethers.utils.formatEther(await _p.getBalance(_addr)));
+    if(typeof G!=='undefined')G.wallet=b;
+    if(_el('walletHdr'))_el('walletHdr').textContent=b.toFixed(4);
+    if(_el('mmBal'))_el('mmBal').textContent=b.toFixed(4);
+    return b;
+  }catch(e){return 0;}
+}
+
+function mmDisconnect(){
+  _ok=false;_p=null;_s=null;_c=null;_addr=null;
+  _show();
+  if(_el('walletHdr'))_el('walletHdr').textContent='0.0000';
+  if(typeof G!=='undefined')G.wallet=0;
+  addEv('<span class="eg">MetaMask desconectado</span>');
+}
+
+async function _txSend(fn,desc){
+  try{
+    addEv('<span style="color:#f0a030;font-size:10px">MetaMask: '+(desc||'aprobando')+'...</span>');
+    var tx=await fn();
+    addEv('<span style="color:#666;font-size:10px">Confirmando...</span>');
+    var r=await tx.wait();
+    addEv('<span class="et">OK: '+tx.hash.slice(0,12)+'...</span>');
+    await mmRefresh();return r;
+  }catch(e){
+    if(e.code===4001||e.code==='ACTION_REJECTED')addEv('<span class="eg">Cancelado</span>');
+    else addEv('<span class="eg">Error: '+(e.reason||e.message||'').slice(0,80)+'</span>');
+    return null;
+  }
+}
+
+async function _syncAdv(){
+  if(!_ok||!_c||!_addr)return;
+  try{
+    var w=typeof A!=='undefined'?A.world||1:1;
+    var st=typeof A!=='undefined'?A.stage||1:1;
+    var k=typeof A!=='undefined'?A.kills||0:0;
+    var g=typeof G!=='undefined'?G.gold||0:0;
+    var gl=typeof G!=='undefined'?G.goldLv||1:1;
+    var t=await _c.syncAdventure(w,st,k,g,gl,{gasLimit:200000});
+    await t.wait();
+    addEv('<span style="font-size:9px;color:#00aa44">Progreso guardado</span>');
+  }catch(e){console.warn('syncAdv:',e.message);}
+}
+
+async function _syncHeroes(){
+  if(!_ok||!_c||!_addr||typeof A==='undefined')return;
+  try{
+    var h=A.heroes||[];
+    var t=await _c.syncHeroes(
+      h[0]?h[0].lv||1:1,h[1]?h[1].lv||0:0,h[2]?h[2].lv||0:0,h[3]?h[3].lv||0:0,
+      h[0]?h[0].xp||0:0,h[1]?h[1].xp||0:0,h[2]?h[2].xp||0:0,h[3]?h[3].xp||0:0,
+      {gasLimit:200000}
+    );
+    await t.wait();
+  }catch(e){console.warn('syncHeroes:',e.message);}
+}
+
+function _hookAll(){
+  // openChest: 1 TX para N cofres
+  var oOC=openChest;
+  openChest=async function(count,mode){
+    if(mode!=='sol')return oOC(count,mode);
+    var cost=ethers.utils.parseEther((0.001*count).toFixed(6));
+    addEv('<span class="et">Cofre x'+count+' ('+(0.001*count).toFixed(3)+' BNB)...</span>');
+    var r=await _txSend(function(){return _c.openBossChest(count,{value:cost,gasLimit:450000});},count+' cofres');
+    if(!r)return;
+    var evt=r.events&&r.events.find(function(e){return e.event==='ChestOpened';});
+    if(evt&&evt.args&&evt.args.rarities){
+      var n=['C','PC','R','E','L','M'];
+      addEv('<span class="et">On-chain: '+evt.args.rarities.map(function(v){return n[_bn(v)]||'?';}).join(',')+'</span>');
+    }
+    oOC(count,mode);
+  };
+
+  // buyShop: 1 TX
+  var oBS=buyShop;
+  buyShop=async function(type){
+    var costs={gold:'0.001',gems:'0.01',items:'0.005'};
+    var tidx={gold:0,gems:1,items:2};
+    var cost=ethers.utils.parseEther(costs[type]);
+    addEv('<span class="et">Tienda '+type+' ('+costs[type]+' BNB)...</span>');
+    var r=await _txSend(function(){return _c.shopBuy(tidx[type],1,{value:cost,gasLimit:200000});},type);
+    if(!r)return;
+    oBS(type);
+  };
+
+  // startAuto / boss: 1 TX para unirse
+  var oSA=typeof startAuto!=='undefined'?startAuto:null;
+  if(oSA){
+    startAuto=async function(){
+      if(typeof G!=='undefined'&&G.bossJoined){oSA();return;}
+      addEv('<span class="et">Uniendose al boss (0.001 BNB)...</span>');
+      var r=await _txSend(function(){return _c.joinBossSession({value:ethers.utils.parseEther('0.001'),gasLimit:200000});},'unirse boss');
+      if(!r)return;
+      if(typeof G!=='undefined')G.bossJoined=true;
+      oSA();
+    };
+  }
+
+  // doAtk: potenciado=TX, basico=gratis
+  var oDA=doAtk;
+  doAtk=async function(){
+    if(typeof G==='undefined'||G.atkType!==1)return oDA();
+    var r=await _txSend(function(){return _c.attackBoss(
+      Math.floor(Math.random()*1000+500).toString(),true,
+      {value:ethers.utils.parseEther('0.001'),gasLimit:200000}
+    );});
+    if(r)oDA();
+  };
+
+  // claimReward
+  var oCR=claimReward;
+  claimReward=async function(){
+    var r=await _txSend(function(){return _c.claimReward({gasLimit:150000});},'reclamar');
+    if(r){addEv('<span class="et">Recompensa enviada!</span>');oCR();}
+  };
+
+  // cofre diario
+  var oDC=openDailyChest;
+  openDailyChest=async function(){
+    var r=await _txSend(function(){return _c.claimDailyChest({gasLimit:150000});},'cofre diario');
+    if(r)oDC();else addEv('<span class="eg">Cofre diario: ya reclamado (24h)</span>');
+  };
+
+  // ascend
+  var oAsc=typeof doAscend!=='undefined'?doAscend:null;
+  if(oAsc){
+    doAscend=async function(){
+      var r=await _txSend(function(){return _c.ascend({gasLimit:200000});},'ascension');
+      if(r){oAsc();await _syncAdv();await _syncHeroes();}
+    };
+  }
+
+  // Sync on-chain al completar stage (gratis, sin gas si RPC)
+  // Solo se llama cuando el jugador cambia de stage
+  var prevStage=typeof A!=='undefined'?A.stage:0;
+  setInterval(function(){
+    if(!_ok||typeof A==='undefined')return;
+    if(A.stage!==prevStage){prevStage=A.stage;_syncAdv();}
+  },5000);
+
+  // Refresh balance + pools cada 30s (lectura, sin gas)
+  setInterval(async function(){
+    if(!_ok||!_c)return;
+    try{
+      await mmRefresh();
+      var inf=await _c.getSessionInfo();
+      var bp=_fe(inf._poolBoss),ap=_fe(inf._poolAdv);
+      if(typeof G!=='undefined'){G.pool=bp;G.treasury=ap;G.timeLeft=_bn(inf._timeLeft);}
+      var m={pPool:bp.toFixed(4),pTreasury:ap.toFixed(4),advPoolBig:ap.toFixed(4),advPayoutBig:(ap*0.03).toFixed(4)};
+      Object.entries(m).forEach(function(kv){var el=_el(kv[0]);if(el)el.textContent=kv[1];});
+      if(typeof fastStats==='function')fastStats();
+    }catch(e){}
+  },30000);
+
+  addEv('<span style="font-size:10px;color:#00cc66">BSC activo · Progreso on-chain · Cualquier dispositivo</span>');
+}
+
+window.addEventListener('load',function(){
+  setTimeout(function(){var mm=_findMM();if(mm&&mm.selectedAddress)mmConnect();},500);
+});
+</script>
 </body>
 </html>
