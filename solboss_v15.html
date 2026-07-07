@@ -2501,17 +2501,14 @@ function renderBurnPanel(){
 function burnOne(idx){if(idx<0||idx>=G.inventory.length)return;const it=G.inventory[idx];const r=RAR.find(x=>x.id===it.rarityId);const gems=it.gems||r?.gems||1;G.gems+=gems;G.inventory.splice(idx,1);addEv(`<span class="egem">🔥 +${gems}💎</span>`);flx('flgem');updateGemUI();renderBurnPanel();}
 function burnGrp(rid,count){const r=RAR.find(x=>x.id===rid);const items=G.inventory.filter(it=>it.rarityId===rid).slice(0,count);const gems=items.reduce((s,it)=>s+(it.gems||r?.gems||1),0);items.forEach(it=>{const i=G.inventory.indexOf(it);if(i>=0)G.inventory.splice(i,1);});G.gems+=gems;addEv(`<span class="egem">🔥×${items.length}→+${gems}💎</span>`);flx('flgem');updateGemUI();renderBurnPanel();}
 function calcAtk(){let b=100;Object.values(G.gear).forEach(g=>{if(!g||!g.statVal)return;var v=parseFloat(g.statVal)||0;if(g.stat==='ATK')b+=v;else b+=v*.25;});const rb=getRelicB()||{bAtk:0},tb=getT()||{bossAtk:0};var r=Math.floor(b*(1+(rb.bAtk||0)*.01)*(1+(tb.bossAtk||0)*.01));return isNaN(r)?100:r;}
-function calcCrit(){let c=5;if(G.gear.helmet)c+=G.gear.helmet.critBonus;return Math.min(75,c+getRelicB().crit);}
+function calcCrit(){let c=5;if(G.gear.helmet&&G.gear.helmet.critBonus)c+=parseFloat(G.gear.helmet.critBonus)||0;var rb=getRelicB();return Math.min(75,c+(rb&&rb.crit?rb.crit:0));}
 function calcAtkMult(){let m=1;if(G.gear.weapon&&G.gear.weapon.atkMult)m=G.gear.weapon.atkMult||1;return isNaN(m)?1:m;}
-function calcAutoSpd(){let s=0;if(G.gear.boots)s=G.gear.boots.spdBonus;return Math.max(600,2000-s*8);}
+function calcAutoSpd(){var s=0;if(G.gear.boots&&G.gear.boots.spdBonus)s=parseFloat(G.gear.boots.spdBonus)||0;var spd=2000-s*8;return Math.max(1000,isNaN(spd)?1000:spd);}
 function setAtkType(t){G.atkType=t;$i('atkC0').className='atk-c'+(t===0?' sel':'');$i('atkC1').className='atk-c'+(t===1?' sel2':'');$i('aTypeD').textContent=t===0?'Básico':'Potenciado';if(G.autoOn){clearInterval(G.autoTimer);launchTimer();}}
-function launchTimer(){const spd=calcAutoSpd();if($i('aSpdD'))$i('aSpdD').textContent=spd;G.autoTimer=setInterval(()=>{if(G.bossHp>0)doAtk();else stopAuto();},spd);}
+function launchTimer(){var spd=calcAutoSpd();if(!spd||isNaN(spd)||spd<1000)spd=1000;if($i('aSpdD'))$i('aSpdD').textContent=spd;G.autoTimer=setInterval(()=>{if(G.bossHp>0)doAtk();else stopAuto();},spd);}
 function toggleAuto(){
   if(G.autoOn){stopAuto();return;}
-  if(typeof _ok!=='undefined'&&_ok&&!G.bossJoined){
-    if(typeof _joinBossAndStart==='function'){_joinBossAndStart();return;}
-  }
-  startAuto2();
+  startAuto2(); // MM block hooks this to joinBossSession first
 }
 function startAuto2(){G.autoOn=true;$i('autoBtn').textContent='⏹ DETENER';$i('autoBtn').className='btn-auto stop';$i('sDot').className='sdot on';$i('aLbl').textContent='Auto-ataque ACTIVO';launchTimer();addEv('<span class="et">🔄 Auto-ataque activado</span>');}
 function stopAuto(){G.autoOn=false;clearInterval(G.autoTimer);$i('autoBtn').textContent='▶ INICIAR';$i('autoBtn').className='btn-auto go';$i('sDot').className='sdot';$i('aLbl').textContent='Auto-ataque detenido';}
@@ -2598,7 +2595,20 @@ function flx(id){const e=$i(id);if(!e)return;e.style.animation='none';void e.off
 function spawnFloat(dmg,cls){const e=document.createElement('div');e.className='dmgf '+cls;e.textContent='-'+fmt(dmg);e.style.left=rng(24,66)+'%';e.style.top=rng(20,44)+'%';document.body.appendChild(e);setTimeout(()=>e.remove(),1050);}
 function updateGemUI(){const g=G.gems;[$i('gemHdr'),$i('gemBig'),$i('charGemD'),$i('gemTotalD'),$i('advGemD'),$i('advGemsAvail')].forEach(el=>{if(el)el.textContent=g;});if($i('advChestsTotal'))$i('advChestsTotal').textContent=A.chestsTotal;const inv=G.inventory.length;if($i('gemInvD'))$i('gemInvD').textContent=inv;if($i('gemInvD2'))$i('gemInvD2').textContent=inv;if($i('gemSoulD'))$i('gemSoulD').textContent=G.soulFragments;if($i('soulHdr'))$i('soulHdr').textContent=G.soulFragments;}
 function renderGearGrid(){$i('gearGrid').innerHTML=SL.map(s=>{const g=G.gear[s.id];if(!g)return`<div class="gslot empty"><div style="font-size:22px;text-align:center;padding:6px">${s.icon}</div><div style="font-size:9px;color:var(--text3);text-align:center">${s.lbl}</div></div>`;const c=g.rarityCol;return`<div class="gslot ${g.rarityId}"><div class="gs-rb" style="background:${c}1a;color:${c};border-color:${c}55">${g.rarityLbl}</div><div class="gs-art"><svg width="50" height="50" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">${gSvg(g.slotId,g.rarityId,70)}</svg></div><div class="gs-name" style="color:${c}">${g.name}</div><div class="gs-ss"><div class="gs-sr"><span class="gs-sk">${g.stat}</span><span class="gs-sv">+${g.statVal}</span></div><div class="gs-sr"><span class="gs-sk">CRIT</span><span class="gs-sv">+${g.critBonus}%</span></div></div><div class="gs-eff">${g.effect}</div></div>`;}).join('');}
-function renderCombatStats(){$i('combatStats').innerHTML=[{l:'ATK',v:fmt(calcAtk()),c:'var(--red2)'},{l:'Mult.',v:'×'+calcAtkMult().toFixed(2),c:'var(--purple3)'},{l:'Crit',v:calcCrit()+'%',c:'#f09030'},{l:'Vel.',v:calcAutoSpd()+'ms',c:'var(--teal)'},{l:'Nivel',v:'Lv.'+G.charLv,c:'var(--purple3)'},{l:'Reset',v:'24h',c:'var(--text3)'}].map(s=>`<div class="cs-c"><div class="cs-l">${s.l}</div><div class="cs-v" style="color:${s.c}">${s.v}</div></div>`).join('');}
+function renderCombatStats(){
+  var atk=calcAtk()||100;
+  var mult=calcAtkMult()||1;if(isNaN(mult))mult=1;
+  var crit=calcCrit();if(isNaN(crit))crit=5;
+  var spd=calcAutoSpd();if(isNaN(spd)||spd<1000)spd=1000;
+  $i('combatStats').innerHTML=[
+    {l:'ATK',v:fmt(atk),c:'var(--red2)'},
+    {l:'Mult.',v:'×'+mult.toFixed(2),c:'var(--purple3)'},
+    {l:'Crit',v:crit+'%',c:'#f09030'},
+    {l:'Vel.',v:spd+'ms',c:'var(--teal)'},
+    {l:'Nivel',v:'Lv.'+G.charLv,c:'var(--purple3)'},
+    {l:'Reset',v:'24h',c:'var(--text3)'}
+  ].map(s=>`<div class="cs-c"><div class="cs-l">${s.l}</div><div class="cs-v" style="color:${s.c}">${s.v}</div></div>`).join('');
+}
 function renderCharInfo(){$i('charLvD').textContent=G.charLv;const cls=['NOVATO','APRENDIZ','GUERRERO','VETERANO','ÉLITE','MAESTRO','CAMPEÓN','LEYENDA','SEMIDIOS','DIOS'];$i('charClsD').textContent=cls[Math.min(G.charLv-1,9)];$i('xpLbl').textContent=fmt(G.charXp)+'/'+fmt(G.charXpNeeded);$i('xpFill').style.width=(G.charXp/G.charXpNeeded*100)+'%';if($i('charAscD'))$i('charAscD').textContent=A.ascensions;if($i('charGemD'))$i('charGemD').textContent=G.gems;if($i('charWinD'))$i('charWinD').textContent=G.wins;if($i('charMaxD'))$i('charMaxD').textContent=G.maxBoss;renderCharHero();}
 function updateUI(){if(!BOSSES||!G.bossLv)return;const b=BOSSES[G.bossLv-1];if(!b)return;if(!$i('bossLvD'))return;
   $i('bossLvD').textContent='LV '+G.bossLv;$i('bossNameEl').textContent=b.name;$i('bossSubEl').textContent=b.sub;$i('bossTierBadge').textContent='◈ '+b.tier;$i('playersD').textContent=G.players;$i('chestsD').textContent=G.chestsTotal;$i('ak0dmg').textContent=`${fmt(Math.floor(calcAtk()*calcAtkMult()*.5))}–${fmt(Math.floor(calcAtk()*calcAtkMult()*1.5))} DMG`;$i('ak1dmg').textContent=`${fmt(Math.floor(calcAtk()*calcAtkMult()*5))}–${fmt(Math.floor(calcAtk()*calcAtkMult()*15))} DMG`;$i('aSpdD').textContent=calcAutoSpd();fastHp();fastStats();renderLeaders(false);renderChain();drawBoss(G.bossLv);renderGearGrid();renderCombatStats();renderCharInfo();updateGemUI();renderBurnPanel();advUpdateUI();updatePityUI();updateRewardBanner();updateGoldUI();}
@@ -2620,56 +2630,6 @@ function connectWalletGame(){if(typeof mmConnect!=="undefined")mmConnect();}
 
 // Auto-detect wallet on load
 // (old Solana load listener removed)
-
-// ════════════════════════════════════════════════════════
-//  METAMASK + BSC INTEGRATION v2 (MetaMask específico)
-// ════════════════════════════════════════════════════════
-const BSC_TESTNET={chainId:'0x61',chainName:'BSC Testnet',nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},rpcUrls:['https://data-seed-prebsc-1-s1.binance.org:8545/'],blockExplorerUrls:['https://testnet.bscscan.com/']};
-const USE_TESTNET=true;
-const CONTRACT_ADDR='0x0000000000000000000000000000000000000000';
-let _web3,_contract,_userAccount,_walletOk=false;
-const CONTRACT_ABI=[{"inputs":[],"name":"registerPlayer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"damage","type":"uint256"},{"name":"powered","type":"bool"}],"name":"attackBoss","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"count","type":"uint8"}],"name":"openBossChest","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"name":"itemType","type":"uint8"}],"name":"shopBuy","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"ascend","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimDailyChest","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"world","type":"uint32"},{"name":"stage","type":"uint8"},{"name":"kills","type":"uint64"},{"name":"goldLv","type":"uint8"}],"name":"syncAdventure","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"a","type":"address"}],"name":"getPlayerBoss","outputs":[{"components":[{"name":"sessionId","type":"uint256"},{"name":"damage","type":"uint256"},{"name":"pendingReward","type":"uint256"},{"name":"wins","type":"uint32"},{"name":"bossLvReached","type":"uint8"},{"name":"registered","type":"bool"}],"type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"name":"a","type":"address"}],"name":"getPlayerGacha","outputs":[{"components":[{"name":"gems","type":"uint32"},{"name":"chestsOpened","type":"uint32"},{"name":"pityEpic","type":"uint16"},{"name":"pityLeg","type":"uint16"},{"name":"pityMyth","type":"uint16"},{"name":"soulFragments","type":"uint32"},{"name":"talentPts","type":"uint8"},{"name":"ascensions","type":"uint8"},{"name":"lastDailyChest","type":"uint256"},{"name":"registeredAt","type":"uint256"}],"type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getSessionInfo","outputs":[{"name":"_id","type":"uint256"},{"name":"_timeLeft","type":"uint256"},{"name":"_poolBoss","type":"uint256"},{"name":"_poolAdv","type":"uint256"},{"name":"_totalDmg","type":"uint256"}],"stateMutability":"view","type":"function"}];
-
-function _getMetaMaskProvider(){
-  const eth=window.ethereum;if(!eth)return null;
-  if(eth.providers&&eth.providers.length){
-    return eth.providers.find(p=>p.isMetaMask&&!p.isTrust&&!p.isTrustWallet&&!p.isCoinbaseWallet&&!p.isTokenPocket)||null;
-  }
-  if(eth.isMetaMask&&!eth.isTrust&&!eth.isTrustWallet&&!eth.isCoinbaseWallet)return eth;
-  return null;
-}
-
-async function refreshBalance(){
-  if(!_userAccount)return;
-  try{
-    let bnb=0;
-    if(_web3){const wei=await _web3.eth.getBalance(_userAccount);bnb=parseFloat(_web3.utils.fromWei(wei,'ether'));}
-    else{const mm=_getMetaMaskProvider();if(mm){const r=await mm.request({method:'eth_getBalance',params:[_userAccount,'latest']});bnb=parseInt(r,16)/1e18;}}
-    G.wallet=bnb;
-    if($i('walletHdr'))$i('walletHdr').textContent=bnb.toFixed(4);
-    if($i('walletBalanceLive'))$i('walletBalanceLive').textContent=bnb.toFixed(4);
-    if(_contract){try{const info=await _contract.methods.getSessionInfo().call();G.pool=parseFloat(_web3.utils.fromWei(info._poolBoss,'ether'));G.treasury=parseFloat(_web3.utils.fromWei(info._poolAdv,'ether'));fastStats();}catch(e){}}
-    return bnb;
-  }catch(e){console.warn('balance:',e.message);}
-}
-function disconnectWallet(){
-  _walletOk=false;_userAccount=null;_web3=null;_contract=null;
-  if($i('walletDisconnected'))$i('walletDisconnected').style.display='block';
-  if($i('walletConnected'))$i('walletConnected').style.display='none';
-  if($i('walletHdr'))$i('walletHdr').textContent='0.0000';
-  G.wallet=0;addEv('<span class="eg">🔌 MetaMask desconectado</span>');
-}
-async function _initPlayerOnChain(){
-  if(!_contract||!_userAccount)return;
-  try{
-    const p=await _contract.methods.getPlayerBoss(_userAccount).call();
-    if(!p.registered){addEv('<span class="et">📝 Registrando...</span>');await _contract.methods.registerPlayer().send({from:_userAccount});addEv('<span class="et">✅ ¡Registrado en BNB Chain!</span>');}
-    const g=await _contract.methods.getPlayerGacha(_userAccount).call();
-    G.gems=parseInt(g.gems);G.pityEpic=parseInt(g.pityEpic);G.pityLeg=parseInt(g.pityLeg);G.pityMyth=parseInt(g.pityMyth)||0;
-    updateGemUI();updatePityUI();addEv('<span class="et">📊 Estado desde BNB Chain</span>');
-  }catch(e){console.warn('initPlayer:',e.message);}
-}
-
 
 </script>
 
@@ -2859,7 +2819,7 @@ async function _initPlayerOnChain(){
 // CT = SolBoss V7 desplegado — actualiza tras desplegar SolBoss_V7.sol
 // NOTA: el contrato actual en 0x4ce95... es V6 (saveAdv/saveHeroes/saveGearBoss)
 // Si despliegas V7, actualiza CT aqui
-var CT  = '0x4ce95bd3e4b83071528133dc4b76c0b806bb3f6e';
+var CT  = '0x6751769451d0755bf3a06Aa6d2BfE2E5953a0705';
 
 var ABI = [
   // V7 functions (save state in 2 TXs max)
